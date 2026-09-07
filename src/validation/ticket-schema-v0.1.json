@@ -1,0 +1,189 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/schemas/customer-service-ticket-v0.1.json",
+  "title": "Customer Service Copilot Ticket",
+  "description": "客服 Copilot MVP 工单数据结构。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "ticket_id",
+    "created_at",
+    "channel",
+    "customer",
+    "issue",
+    "ai_processing",
+    "workflow",
+    "resolution",
+    "audit"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1" },
+    "ticket_id": { "type": "string", "pattern": "^TK-[0-9]{8}-[0-9]{3,}$" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": ["string", "null"], "format": "date-time" },
+    "channel": { "enum": ["text", "voice_transcript"] },
+    "customer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["user_uid", "identity_status"],
+      "properties": {
+        "user_uid": { "type": "string", "minLength": 1 },
+        "identity_status": { "enum": ["verified", "unverified", "not_required"] },
+        "membership_status": { "enum": ["active", "expired", "suspended", "none", null] },
+        "auto_renewal_status": { "enum": ["active", "cancelled", "cancelling", "not_applicable", null] },
+        "entitlement_expires_at": { "type": ["string", "null"], "format": "date-time" }
+      }
+    },
+    "issue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "original_message",
+        "summary",
+        "handling_category",
+        "subtypes",
+        "risk_level",
+        "risk_reason",
+        "classification_confidence"
+      ],
+      "properties": {
+        "original_message": { "type": "string", "minLength": 1 },
+        "summary": { "type": "string", "minLength": 1 },
+        "handling_category": { "enum": ["low_risk_info", "low_risk_other", "high_risk"] },
+        "subtypes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "policy_query",
+              "membership_query",
+              "renewal_query",
+              "consumption_record_query",
+              "operation_status_query",
+              "unsubscribe",
+              "reissue",
+              "complaint",
+              "suggestion",
+              "general_operation",
+              "refund",
+              "report",
+              "account_security",
+              "legal_or_safety"
+            ]
+          }
+        },
+        "risk_level": { "enum": ["low", "high"] },
+        "risk_reason": { "type": "string", "minLength": 1 },
+        "classification_confidence": { "enum": ["high", "low"] }
+      }
+    },
+    "ai_processing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evidence_status", "recommended_action", "knowledge_sources", "user_data_sources", "missing_information"],
+      "properties": {
+        "reply": { "type": ["string", "null"] },
+        "evidence_status": { "enum": ["sufficient", "insufficient", "conflicting"] },
+        "recommended_action": {
+          "enum": ["reply", "ask_clarification", "assign_tier1", "assign_tier2", "notify_department"]
+        },
+        "knowledge_sources": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/knowledgeSource" }
+        },
+        "user_data_sources": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/userDataSource" }
+        },
+        "missing_information": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "workflow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ticket_status",
+        "current_owner",
+        "assigned_to",
+        "routing_reason",
+        "user_resolution_confirmation",
+        "related_department",
+        "department_notification_status"
+      ],
+      "properties": {
+        "ticket_status": {
+          "enum": [
+            "ai_processing",
+            "waiting_user_confirmation",
+            "human_processing",
+            "tier2_processing",
+            "department_notified",
+            "department_processing",
+            "closed"
+          ]
+        },
+        "current_owner": { "enum": ["ai", "tier1", "tier2", "department", "none"] },
+        "assigned_to": { "type": ["string", "null"] },
+        "routing_reason": { "type": ["string", "null"] },
+        "user_resolution_confirmation": { "enum": ["resolved", "unresolved", "pending"] },
+        "related_department": { "type": ["string", "null"] },
+        "department_notification_status": { "enum": ["not_required", "pending", "sent", "failed"] }
+      }
+    },
+    "resolution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["action_result", "summary", "closed_by", "closed_at"],
+      "properties": {
+        "action_result": { "type": ["string", "null"] },
+        "summary": { "type": ["string", "null"] },
+        "closed_by": { "enum": ["ai_confirmed", "tier1", "tier2", "department", null] },
+        "closed_at": { "type": ["string", "null"], "format": "date-time" }
+      }
+    },
+    "audit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["prompt_version", "knowledge_base_version", "human_edit_record"],
+      "properties": {
+        "prompt_version": { "type": "string", "minLength": 1 },
+        "knowledge_base_version": { "type": ["string", "null"] },
+        "human_edit_record": { "type": ["string", "null"] }
+      }
+    }
+  },
+  "$defs": {
+    "knowledgeSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["document_id", "title", "section", "version"],
+      "properties": {
+        "document_id": { "type": "string" },
+        "title": { "type": "string" },
+        "section": { "type": "string" },
+        "version": { "type": "string" },
+        "quote": { "type": ["string", "null"] }
+      }
+    },
+    "userDataSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source", "fields", "queried_at"],
+      "properties": {
+        "source": { "type": "string" },
+        "fields": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        },
+        "queried_at": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

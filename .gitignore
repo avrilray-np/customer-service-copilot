@@ -1,0 +1,17 @@
+node_modules/
+.next/
+out/
+coverage/
+playwright-report/
+test-results/
+*.tsbuildinfo
+.vercel/
+.env*
+!.env.example
+npm-debug.log*
+.DS_Store
+
+# Local Codex collaboration state; keep outside the public portfolio repository
+/.codex/
+/AGENTS.md
+/TASK_STATE.md
