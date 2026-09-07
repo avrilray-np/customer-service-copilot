@@ -21,10 +21,12 @@ button, input { font: inherit; }
 .demo-eyebrow { color: var(--brand-deep); font-size: 11px; font-weight: 800; letter-spacing: .14em; }
 .demo-header h1 { margin: 8px 0 7px; color: #173a5e; font-size: clamp(27px, 3vw, 40px); letter-spacing: -.04em; }
 .demo-header p { margin: 0; color: var(--muted); font-size: 14px; }
-.demo-mode { display: flex; align-items: center; gap: 8px; padding: 9px 13px; border: 1px solid #c9e3f5; border-radius: 999px; color: #4f7898; background: rgba(255,255,255,.8); font-size: 12px; font-weight: 700; white-space: nowrap; }
-.demo-mode span { width: 7px; height: 7px; border-radius: 50%; background: #25a7ff; box-shadow: 0 0 0 4px #d9f1ff; }
-.demo-mode.mode-gemini, .demo-mode.mode-deepseek { color: #116491; border-color: #9dd9f8; background: #eaf8ff; }
-.demo-mode.mode-gemini span, .demo-mode.mode-deepseek span { background: #11a5e8; box-shadow: 0 0 0 4px #ccefff; }
+.mode-switcher { display: flex; align-items: center; gap: 4px; padding: 4px; border: 1px solid #c9e3f5; border-radius: 999px; background: rgba(255,255,255,.82); white-space: nowrap; }
+.mode-switcher button { padding: 7px 12px; border: 0; border-radius: 999px; color: #5f819b; background: transparent; cursor: pointer; font-size: 11px; font-weight: 800; }
+.mode-switcher button.active { color: white; background: linear-gradient(135deg, #2cb2ff, #138fe8); box-shadow: 0 4px 10px rgba(21,151,245,.2); }
+.mode-switcher button:disabled { cursor: wait; opacity: .8; }
+.mode-switcher small { padding: 0 9px 0 5px; color: #397497; font-size: 9px; font-weight: 700; }
+.runtime-loading { margin: -12px 8px 18px; padding: 11px 14px; border: 1px solid #a9daf5; border-radius: 12px; color: #24688f; background: #eef9ff; font-size: 12px; line-height: 1.55; }
 .runtime-warning { margin: -12px 8px 18px; padding: 11px 14px; border: 1px solid #f3cf84; border-radius: 12px; color: #80530b; background: #fff8e8; font-size: 12px; line-height: 1.55; }
 .case-switcher { width: fit-content; display: flex; gap: 5px; margin: 0 auto 18px; padding: 5px; border: 1px solid #cde6f5; border-radius: 13px; background: rgba(255,255,255,.8); }
 .case-switcher button { padding: 9px 14px; border: 0; border-radius: 9px; color: #66849b; background: transparent; cursor: pointer; font-size: 11px; font-weight: 800; }
@@ -280,7 +282,7 @@ button, input { font: inherit; }
 @media (max-width: 700px) {
   .page-shell { padding: 12px; }
   .demo-header { display: block; padding: 18px 5px 22px; }
-  .demo-mode { width: fit-content; margin-top: 14px; }
+  .mode-switcher { width: fit-content; margin-top: 14px; }
   .dual-stage { padding: 12px; }
   .phone-frame { width: min(100%, 370px); }
   .service-window { height: auto; min-height: 720px; }

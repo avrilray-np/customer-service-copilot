@@ -1,10 +1,28 @@
 import { NextResponse } from "next/server";
 import { createProviderSelection } from "@/ai/provider-factory";
 import { publicAiProviderErrorMessage } from "@/ai/ai-provider-error";
-import { caseTwoEscalatedCandidate, caseTwoFollowUp, caseTwoInput } from "@/data/demos/case-two";
+import { caseOneInput } from "@/data/demos/case-one";
+import { caseTwoFollowUp, caseTwoInput } from "@/data/demos/case-two";
+import { caseThreeInput } from "@/data/demos/case-three";
 import { assertAiCandidate } from "@/validation/ai-candidate-validator";
 
 export const runtime = "nodejs";
+
+const demoInputs = {
+  "case-one": caseOneInput,
+  "case-two": caseTwoInput,
+  "case-three": caseThreeInput,
+  "case-two-follow-up": {
+    ...caseTwoInput,
+    message: `${caseTwoInput.message}\n用户追加诉求：${caseTwoFollowUp}`,
+  },
+} as const;
+
+type DemoAnalysisRequest = keyof typeof demoInputs;
+
+function isDemoAnalysisRequest(value: unknown): value is DemoAnalysisRequest {
+  return typeof value === "string" && value in demoInputs;
+}
 
 export async function POST(request: Request) {
   let body: unknown;
@@ -19,19 +37,18 @@ export async function POST(request: Request) {
     typeof body !== "object" ||
     Array.isArray(body) ||
     Object.keys(body).length !== 1 ||
-    (body as { demoCase?: unknown }).demoCase !== "case-two-follow-up"
+    !isDemoAnalysisRequest((body as { demoCase?: unknown }).demoCase)
   ) {
-    return NextResponse.json({ error: "当前接口只接受已定义的案例二追加诉求。" }, { status: 400 });
+    return NextResponse.json({ error: "当前接口只接受已定义的演示案例。" }, { status: 400 });
   }
 
+  const demoCase = (body as { demoCase: DemoAnalysisRequest }).demoCase;
   try {
     const selection = createProviderSelection();
-    const candidate = selection.mode === "mock"
-      ? caseTwoEscalatedCandidate
-      : await selection.provider.analyze({
-          ...caseTwoInput,
-          message: `${caseTwoInput.message}\n用户追加诉求：${caseTwoFollowUp}`,
-        });
+    if (selection.mode === "mock") {
+      return NextResponse.json({ error: "服务器尚未配置真实AI，当前只能使用Mock Mode。" }, { status: 503 });
+    }
+    const candidate = await selection.provider.analyze(demoInputs[demoCase]);
     assertAiCandidate(candidate);
     return NextResponse.json({ candidate, mode: selection.mode, model: selection.model });
   } catch (error) {

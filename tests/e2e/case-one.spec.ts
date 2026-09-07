@@ -1,7 +1,14 @@
 import { expect, test } from "@playwright/test";
 
 test("case one closes only after explicit user confirmation", async ({ page }) => {
+  let analysisCalls = 0;
+  page.on("request", (request) => {
+    if (request.url().includes("/api/ai/analyze")) analysisCalls += 1;
+  });
   await page.goto("/");
+  await expect(page.getByRole("button", { name: "Mock Mode" })).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByRole("button", { name: "AI Mode" })).toHaveAttribute("aria-pressed", "false");
+  expect(analysisCalls).toBe(0);
   await expect(page.getByLabel("用户端")).toBeVisible();
   await expect(page.getByLabel("客服系统")).toBeVisible();
   await expect(page.getByLabel("问题输入框")).toBeVisible();

@@ -185,47 +185,68 @@ describe("DemoApp", () => {
     expect(screen.getByText("payment-risk-joint-queue")).toBeInTheDocument();
   });
 
-  it("labels an explicit Gemini startup fallback instead of impersonating Gemini", async () => {
-    await renderApp({
-      requestedMode: "gemini",
-      activeMode: "mock",
-      model: null,
-      warning: "测试密钥不可用，当前页面已明确切换为Mock演示数据。",
-    });
+  it("starts in Mock Mode without calling the configured AI provider", async () => {
+    const fetcher = vi.fn();
+    vi.stubGlobal("fetch", fetcher);
+    await renderApp({ requestedMode: "deepseek", activeMode: "mock", model: "deepseek-v4-flash", warning: null });
 
-    expect(screen.getByText("当前使用 Mock AI")).toBeInTheDocument();
-    expect(screen.getByRole("alert")).toHaveTextContent("Gemini未启用");
-    expect(screen.getByRole("alert")).toHaveTextContent("明确切换为Mock");
+    expect(screen.getByRole("button", { name: "Mock Mode" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("button", { name: "AI Mode" })).toHaveAttribute("aria-pressed", "false");
+    expect(fetcher).not.toHaveBeenCalled();
   });
 
-  it("labels an active DeepSeek runtime", async () => {
-    await renderApp({ requestedMode: "deepseek", activeMode: "deepseek", model: "deepseek-v4-flash", warning: null });
+  it("loads only the selected case in AI Mode and reuses its page-session cache", async () => {
+    const user = userEvent.setup();
+    const caseOneCandidate = await mockAiProvider.analyze(caseOneInput);
+    const caseTwoCandidate = await mockAiProvider.analyze(caseTwoInput);
+    const fetcher = vi.fn().mockImplementation(async (_url: string, init: RequestInit) => {
+      const { demoCase } = JSON.parse(String(init.body));
+      const candidate = demoCase === "case-two" ? caseTwoCandidate : caseOneCandidate;
+      return new Response(JSON.stringify({ candidate, mode: "deepseek", model: "deepseek-v4-flash" }), { status: 200, headers: { "content-type": "application/json" } });
+    });
+    vi.stubGlobal("fetch", fetcher);
+    await renderApp({ requestedMode: "deepseek", activeMode: "mock", model: "deepseek-v4-flash", warning: null });
 
-    expect(screen.getByText("DeepSeek · deepseek-v4-flash")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "AI Mode" }));
+    expect(await screen.findByText("DeepSeek · deepseek-v4-flash")).toBeInTheDocument();
+    expect(fetcher).toHaveBeenCalledTimes(1);
+    expect(JSON.parse(String(fetcher.mock.calls[0][1].body))).toEqual({ demoCase: "case-one" });
+
+    await user.click(screen.getByRole("button", { name: "Low-Risk AI Assist & Handoff" }));
+    await waitFor(() => expect(fetcher).toHaveBeenCalledTimes(2));
+    expect(JSON.parse(String(fetcher.mock.calls[1][1].body))).toEqual({ demoCase: "case-two" });
+
+    await user.click(screen.getByRole("button", { name: "AI Only" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "AI Mode" })).toHaveAttribute("aria-pressed", "true"));
+    expect(fetcher).toHaveBeenCalledTimes(2);
   });
 
-  it("labels an explicit DeepSeek startup fallback instead of impersonating DeepSeek", async () => {
-    await renderApp({
-      requestedMode: "deepseek",
-      activeMode: "mock",
-      model: null,
-      warning: "测试余额不可用，当前页面已明确切换为Mock演示数据。",
-    });
+  it("keeps Mock data selected when AI Mode fails", async () => {
+    const user = userEvent.setup();
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(JSON.stringify({ error: "DeepSeek余额不足。" }), {
+      status: 502,
+      headers: { "content-type": "application/json" },
+    })));
+    await renderApp({ requestedMode: "deepseek", activeMode: "mock", model: "deepseek-v4-flash", warning: null });
 
-    expect(screen.getByText("当前使用 Mock AI")).toBeInTheDocument();
-    expect(screen.getByRole("alert")).toHaveTextContent("DeepSeek未启用");
-    expect(screen.getByRole("alert")).toHaveTextContent("明确切换为Mock");
+    await user.click(screen.getByRole("button", { name: "AI Mode" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("DeepSeek余额不足");
+    expect(screen.getByRole("button", { name: "Mock Mode" })).toHaveAttribute("aria-pressed", "true");
+    await waitFor(() => expect(screen.getByTestId("ticket-status")).toHaveTextContent("等待用户确认"));
+    expect(screen.getByTestId("handling-category")).toHaveTextContent("低风险信息咨询");
   });
 
   it("keeps a failed Gemini follow-up pending until the user explicitly chooses Mock", async () => {
     const user = userEvent.setup();
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(JSON.stringify({ error: "Gemini服务暂时不可用。" }), {
-      status: 502,
-      headers: { "content-type": "application/json" },
-    })));
-    await renderApp({ requestedMode: "gemini", activeMode: "gemini", model: "gemini-test", warning: null });
+    const initialCandidate = await mockAiProvider.analyze(caseTwoInput);
+    vi.stubGlobal("fetch", vi.fn()
+      .mockResolvedValueOnce(new Response(JSON.stringify({ candidate: initialCandidate, mode: "gemini", model: "gemini-test" }), { status: 200, headers: { "content-type": "application/json" } }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ error: "Gemini服务暂时不可用。" }), { status: 502, headers: { "content-type": "application/json" } })));
+    await renderApp({ requestedMode: "gemini", activeMode: "mock", model: "gemini-test", warning: null });
 
     await user.click(screen.getByRole("button", { name: "Low-Risk AI Assist & Handoff" }));
+    await user.click(screen.getByRole("button", { name: "AI Mode" }));
+    await screen.findByText("Gemini · gemini-test");
     await user.click(await screen.findByRole("button", { name: /继续提出：补发并投诉/ }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("Gemini服务暂时不可用");
@@ -237,13 +258,15 @@ describe("DemoApp", () => {
 
   it("keeps a failed DeepSeek follow-up pending until the user explicitly chooses Mock", async () => {
     const user = userEvent.setup();
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(JSON.stringify({ error: "DeepSeek服务暂时不可用。" }), {
-      status: 502,
-      headers: { "content-type": "application/json" },
-    })));
-    await renderApp({ requestedMode: "deepseek", activeMode: "deepseek", model: "deepseek-v4-flash", warning: null });
+    const initialCandidate = await mockAiProvider.analyze(caseTwoInput);
+    vi.stubGlobal("fetch", vi.fn()
+      .mockResolvedValueOnce(new Response(JSON.stringify({ candidate: initialCandidate, mode: "deepseek", model: "deepseek-v4-flash" }), { status: 200, headers: { "content-type": "application/json" } }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ error: "DeepSeek服务暂时不可用。" }), { status: 502, headers: { "content-type": "application/json" } })));
+    await renderApp({ requestedMode: "deepseek", activeMode: "mock", model: "deepseek-v4-flash", warning: null });
 
     await user.click(screen.getByRole("button", { name: "Low-Risk AI Assist & Handoff" }));
+    await user.click(screen.getByRole("button", { name: "AI Mode" }));
+    await screen.findByText("DeepSeek · deepseek-v4-flash");
     await user.click(await screen.findByRole("button", { name: /继续提出：补发并投诉/ }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("DeepSeek服务暂时不可用");

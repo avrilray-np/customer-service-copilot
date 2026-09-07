@@ -1,11 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import type { AiRuntimeInfo } from "@/ai/types";
+import { useEffect, useRef, useState } from "react";
+import type { AiAnalysisCandidate, AiMode, AiRuntimeInfo } from "@/ai/types";
 import type { Ticket } from "@/domain/ticket/types";
-import { DemoSessionProvider, useDemoSession } from "@/session/demo-session";
+import { DemoSessionProvider, useDemoSession, type DemoCase } from "@/session/demo-session";
 import { caseTwoFollowUp } from "@/data/demos/case-two";
 import { caseThreeFacts } from "@/data/demos/case-three";
+import { createCaseThreeTicket, createCaseTwoWaitingTicket, createWaitingTicket } from "@/domain/ticket/create-ticket";
+import { isAiCandidate } from "@/validation/ai-candidate-validator";
+import { isTicket } from "@/validation/ticket-validator";
 
 const statusLabels: Record<Ticket["workflow"]["ticket_status"], string> = {
   ai_processing: "AI处理中",
@@ -41,6 +44,24 @@ function providerLabel(mode: AiRuntimeInfo["activeMode"]) {
   return mode === "deepseek" ? "DeepSeek" : mode === "gemini" ? "Gemini" : "Mock AI";
 }
 
+function promptVersion(mode: Exclude<AiMode, "mock">) {
+  return mode === "deepseek" ? "customer-service-deepseek-v1.0" : "customer-service-gemini-v1.0";
+}
+
+function createDemoTicket(demoCase: DemoCase, candidate: AiAnalysisCandidate, mode: Exclude<AiMode, "mock">) {
+  const options = { promptVersion: promptVersion(mode) };
+  const ticket = demoCase === "case-one"
+    ? createWaitingTicket(candidate, options)
+    : demoCase === "case-two"
+      ? createCaseTwoWaitingTicket(candidate, options)
+      : createCaseThreeTicket(candidate, options);
+  if (!isTicket(ticket)) throw new Error("服务端返回的AI结果无法生成有效工单。");
+  return ticket;
+}
+
+type DisplayMode = "mock" | "ai";
+type DemoTicketMap = Record<DemoCase, Ticket>;
+
 export function DemoApp({
   initialTicket,
   caseTwoTicket,
@@ -54,16 +75,98 @@ export function DemoApp({
   aiRuntime?: AiRuntimeInfo;
   processingDelayMs?: number;
 }) {
-  const [selectedCase, setSelectedCase] = useState<"case-one" | "case-two" | "case-three">("case-one");
-  const activeTicket = selectedCase === "case-two" && caseTwoTicket ? caseTwoTicket : selectedCase === "case-three" && caseThreeTicket ? caseThreeTicket : initialTicket;
+  const [selectedCase, setSelectedCase] = useState<DemoCase>("case-one");
+  const [displayMode, setDisplayMode] = useState<DisplayMode>("mock");
+  const [aiTickets, setAiTickets] = useState<Partial<DemoTicketMap>>({});
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
+  const [activeModel, setActiveModel] = useState(aiRuntime.model);
+  const requestSequence = useRef(0);
+  const mockTickets: DemoTicketMap = {
+    "case-one": initialTicket,
+    "case-two": caseTwoTicket ?? initialTicket,
+    "case-three": caseThreeTicket ?? initialTicket,
+  };
+  const configuredAiMode = aiRuntime.requestedMode === "mock" ? null : aiRuntime.requestedMode;
+  const activeTicket = displayMode === "ai" && aiTickets[selectedCase] ? aiTickets[selectedCase] : mockTickets[selectedCase];
+  const activeProviderMode: AiMode = displayMode === "ai" && configuredAiMode ? configuredAiMode : "mock";
+
+  const loadAiCase = async (demoCase: DemoCase) => {
+    if (!configuredAiMode) {
+      setDisplayMode("mock");
+      setAiError("服务器尚未配置真实AI，当前只能使用Mock Mode。");
+      return;
+    }
+    if (aiTickets[demoCase]) {
+      setAiError(null);
+      return;
+    }
+
+    const requestId = ++requestSequence.current;
+    setAiLoading(true);
+    setAiError(null);
+    try {
+      const response = await fetch("/api/ai/analyze", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ demoCase }),
+      });
+      const result: unknown = await response.json();
+      if (!response.ok) {
+        const message = result && typeof result === "object" && "error" in result && typeof result.error === "string"
+          ? result.error
+          : `${providerLabel(configuredAiMode)}暂时无法分析当前案例。`;
+        throw new Error(message);
+      }
+      const candidate = result && typeof result === "object" && "candidate" in result ? result.candidate : null;
+      if (!isAiCandidate(candidate)) throw new Error("服务端返回的AI结果不符合工单契约。");
+      const ticket = createDemoTicket(demoCase, candidate, configuredAiMode);
+      setAiTickets((current) => ({ ...current, [demoCase]: ticket }));
+      if (result && typeof result === "object" && "model" in result && typeof result.model === "string") setActiveModel(result.model);
+    } catch (error) {
+      if (requestId === requestSequence.current) {
+        setDisplayMode("mock");
+        setAiError(error instanceof Error ? error.message : `${providerLabel(configuredAiMode)}暂时无法分析当前案例。`);
+      }
+    } finally {
+      if (requestId === requestSequence.current) setAiLoading(false);
+    }
+  };
+
+  const selectMode = (mode: DisplayMode) => {
+    if (mode === "mock") {
+      requestSequence.current += 1;
+      setAiLoading(false);
+      setAiError(null);
+      setDisplayMode("mock");
+      return;
+    }
+    setDisplayMode("ai");
+    void loadAiCase(selectedCase);
+  };
+
+  const selectCase = (demoCase: DemoCase) => {
+    requestSequence.current += 1;
+    setAiLoading(false);
+    setAiError(null);
+    setSelectedCase(demoCase);
+    if (displayMode === "ai") void loadAiCase(demoCase);
+  };
+
+  const currentRuntime: AiRuntimeInfo = {
+    requestedMode: aiRuntime.requestedMode,
+    activeMode: activeProviderMode,
+    model: activeProviderMode === "mock" ? null : activeModel,
+    warning: aiError,
+  };
   return (
-    <DemoSessionProvider key={selectedCase} initialTicket={activeTicket} demoCase={selectedCase} aiMode={aiRuntime.activeMode} processingDelayMs={processingDelayMs}>
-      <DemoScreen selectedCase={selectedCase} onSelectCase={setSelectedCase} caseTwoAvailable={Boolean(caseTwoTicket)} caseThreeAvailable={Boolean(caseThreeTicket)} aiRuntime={aiRuntime} />
+    <DemoSessionProvider key={`${selectedCase}-${displayMode}-${aiLoading ? "loading" : "ready"}`} initialTicket={activeTicket} demoCase={selectedCase} aiMode={activeProviderMode} processingDelayMs={processingDelayMs}>
+      <DemoScreen selectedCase={selectedCase} onSelectCase={selectCase} caseTwoAvailable={Boolean(caseTwoTicket)} caseThreeAvailable={Boolean(caseThreeTicket)} aiRuntime={currentRuntime} displayMode={displayMode} onSelectMode={selectMode} aiLoading={aiLoading} />
     </DemoSessionProvider>
   );
 }
 
-function DemoScreen({ selectedCase, onSelectCase, caseTwoAvailable, caseThreeAvailable, aiRuntime }: { selectedCase: "case-one" | "case-two" | "case-three"; onSelectCase: (value: "case-one" | "case-two" | "case-three") => void; caseTwoAvailable: boolean; caseThreeAvailable: boolean; aiRuntime: AiRuntimeInfo }) {
+function DemoScreen({ selectedCase, onSelectCase, caseTwoAvailable, caseThreeAvailable, aiRuntime, displayMode, onSelectMode, aiLoading }: { selectedCase: DemoCase; onSelectCase: (value: DemoCase) => void; caseTwoAvailable: boolean; caseThreeAvailable: boolean; aiRuntime: AiRuntimeInfo; displayMode: DisplayMode; onSelectMode: (mode: DisplayMode) => void; aiLoading: boolean }) {
   const { ticket, initialTicket, demoCase, serviceView, timeline, hasFollowUp, followUpAnalyzing, followUpError, followUpNotice, confirmResolved, requestHuman, addCaseTwoRequest, continueFollowUpWithMock, completeReissue, notifyDepartment, closeTier1, completeRefund, registerReport, transferDepartment, closeTier2, openTicket, backToList, reset } = useDemoSession();
   const [showSources, setShowSources] = useState(false);
   const processing = ticket.workflow.ticket_status === "ai_processing";
@@ -97,10 +200,15 @@ function DemoScreen({ selectedCase, onSelectCase, caseTwoAvailable, caseThreeAva
             <h1>AI客服与工单流转演示</h1>
             <p>用户问题出现后，客服系统同步建单、分析并更新处理状态。</p>
           </div>
-          <div className={`demo-mode mode-${aiRuntime.activeMode}`}><span /> {aiRuntime.activeMode === "mock" ? "当前使用 Mock AI" : `${providerLabel(aiRuntime.activeMode)} · ${aiRuntime.model}`}</div>
+          <div className="mode-switcher" role="group" aria-label="AI运行模式">
+            <button type="button" aria-pressed={displayMode === "mock"} className={displayMode === "mock" ? "active" : ""} onClick={() => onSelectMode("mock")}>Mock Mode</button>
+            <button type="button" aria-pressed={displayMode === "ai"} className={displayMode === "ai" ? "active" : ""} onClick={() => onSelectMode("ai")} disabled={aiLoading}>{aiLoading ? "AI Loading…" : "AI Mode"}</button>
+            {displayMode === "ai" && !aiLoading && aiRuntime.activeMode !== "mock" && <small>{providerLabel(aiRuntime.activeMode)} · {aiRuntime.model}</small>}
+          </div>
         </header>
 
-        {aiRuntime.warning && <div className="runtime-warning" role="alert"><strong>{providerLabel(aiRuntime.requestedMode)}未启用：</strong>{aiRuntime.warning}</div>}
+        {aiLoading && <div className="runtime-loading" role="status">正在使用{providerLabel(aiRuntime.requestedMode)}分析当前案例，仅本次首次查看会产生调用。</div>}
+        {aiRuntime.warning && <div className="runtime-warning" role="alert"><strong>AI Mode未启用：</strong>{aiRuntime.warning} 当前仍使用Mock演示数据。</div>}
 
         <div className="dual-stage">
           <section className="user-side" aria-label="用户端">
