@@ -8,6 +8,8 @@ test("case one closes only after explicit user confirmation", async ({ page }) =
   await page.goto("/");
   await expect(page.getByRole("button", { name: "Mock Mode" })).toHaveAttribute("aria-pressed", "true");
   await expect(page.getByRole("button", { name: "AI Mode" })).toHaveAttribute("aria-pressed", "false");
+  await expect(page.getByRole("group", { name: "AI运行模式" }).getByRole("button")).toHaveCount(2);
+  await expect(page.getByText(/DeepSeek|Gemini|deepseek-v4-flash/)).toHaveCount(0);
   expect(analysisCalls).toBe(0);
   await expect(page.getByLabel("用户端")).toBeVisible();
   await expect(page.getByLabel("客服系统")).toBeVisible();

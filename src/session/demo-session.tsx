@@ -20,7 +20,7 @@ export type ServiceView = "live" | "list" | "detail";
 export interface DemoTimelineEvent { id: string; label: string; actor: string; occurredAt: string; }
 interface SessionState {
   ticket: Ticket; runId: number; serviceView: ServiceView; timeline: DemoTimelineEvent[]; hasFollowUp: boolean;
-  followUpAnalyzing: boolean; followUpError: string | null; followUpNotice: string | null;
+  followUpSubmitted: boolean; followUpAnalyzing: boolean; followUpError: string | null; followUpNotice: string | null;
 }
 interface SessionContextValue extends Omit<SessionState, "runId"> {
   initialTicket: Ticket; demoCase: DemoCase;
@@ -40,14 +40,13 @@ function initialTimeline(demoCase: DemoCase): DemoTimelineEvent[] {
   ];
 }
 function now() { return new Date().toISOString(); }
-function providerLabel(mode: AiMode) { return mode === "deepseek" ? "DeepSeek" : mode === "gemini" ? "Gemini" : "Mock AI"; }
 function createProcessingTicket(ticket: Ticket): Ticket {
   return { ...ticket, workflow: { ...ticket.workflow, ticket_status: "ai_processing", current_owner: "ai", user_resolution_confirmation: "pending" }, resolution: { action_result: null, summary: null, closed_by: null, closed_at: null } };
 }
 
-export function DemoSessionProvider({ initialTicket, demoCase, aiMode = "mock", processingDelayMs = 900, children }: { initialTicket: Ticket; demoCase: DemoCase; aiMode?: AiMode; processingDelayMs?: number; children: ReactNode }) {
+export function DemoSessionProvider({ initialTicket, demoCase, aiMode = "mock", processingDelayMs = 900, processingPaused = false, children }: { initialTicket: Ticket; demoCase: DemoCase; aiMode?: AiMode; processingDelayMs?: number; processingPaused?: boolean; children: ReactNode }) {
   const [state, dispatch] = useReducer((current: SessionState, action: SessionAction): SessionState => {
-    if (action.type === "reset") return { ticket: createProcessingTicket(initialTicket), runId: current.runId + 1, serviceView: "live", timeline: initialTimeline(demoCase), hasFollowUp: false, followUpAnalyzing: false, followUpError: null, followUpNotice: null };
+    if (action.type === "reset") return { ticket: createProcessingTicket(initialTicket), runId: current.runId + 1, serviceView: "live", timeline: initialTimeline(demoCase), hasFollowUp: false, followUpSubmitted: false, followUpAnalyzing: false, followUpError: null, followUpNotice: null };
     if (action.type === "ai_completed") {
       if (current.ticket.workflow.ticket_status !== "ai_processing") return current;
       return { ...current, ticket: initialTicket, serviceView: demoCase === "case-three" ? "list" : "live", timeline: [...current.timeline, { id: "ai-completed", label: demoCase === "case-two" ? "AI完成活动资格查询，等待用户反馈" : demoCase === "case-three" ? "AI识别高风险诉求并直接派至二线" : "AI完成分析，等待用户确认", actor: "AI客服", occurredAt: initialTicket.updated_at ?? initialTicket.created_at }] };
@@ -60,11 +59,11 @@ export function DemoSessionProvider({ initialTicket, demoCase, aiMode = "mock", 
       const occurredAt = now();
       return { ...current, ticket: transitionTicket(current.ticket, { type: "USER_REQUESTED_HUMAN", occurredAt }), serviceView: "list", timeline: [...current.timeline, { id: "user-unresolved", label: "用户反馈问题未解决", actor: "用户", occurredAt }, { id: "tier1-assigned", label: "系统派单至一线客服", actor: "工单系统", occurredAt }] };
     }
-    if (action.type === "follow_up_started") return { ...current, followUpAnalyzing: true, followUpError: null, followUpNotice: null };
+    if (action.type === "follow_up_started") return { ...current, followUpSubmitted: true, followUpAnalyzing: true, followUpError: null, followUpNotice: null };
     if (action.type === "follow_up_failed") return { ...current, followUpAnalyzing: false, followUpError: action.error };
     if (action.type === "add_case_two_request") {
       const occurredAt = now();
-      return { ...current, ticket: transitionTicket(current.ticket, { type: "USER_ADDED_REISSUE_COMPLAINT", occurredAt, message: caseTwoFollowUp, candidate: action.candidate }), serviceView: "list", hasFollowUp: true, followUpAnalyzing: false, followUpError: null, followUpNotice: action.source === "mock" && aiMode !== "mock" ? `${providerLabel(aiMode)}分析失败后，本轮追加诉求已由你明确选择使用Mock结果继续。` : null, timeline: [...current.timeline, { id: "follow-up", label: "用户追加补发与投诉诉求", actor: "用户", occurredAt }, { id: "reclassified", label: `${providerLabel(action.source)}重新分类为低风险其他类`, actor: "AI客服", occurredAt }, { id: "tier1-benefit-assigned", label: "系统派单至一线客服", actor: "工单系统", occurredAt }] };
+      return { ...current, ticket: transitionTicket(current.ticket, { type: "USER_ADDED_REISSUE_COMPLAINT", occurredAt, message: caseTwoFollowUp, candidate: action.candidate }), serviceView: "list", hasFollowUp: true, followUpAnalyzing: false, followUpError: null, followUpNotice: action.source === "mock" && aiMode !== "mock" ? "AI分析失败后，本轮追加诉求已由你明确选择使用Mock结果继续。" : null, timeline: [...current.timeline, { id: "follow-up", label: "用户追加补发与投诉诉求", actor: "用户", occurredAt }, { id: "reclassified", label: "AI重新分类为低风险其他类", actor: "AI客服", occurredAt }, { id: "tier1-benefit-assigned", label: "系统派单至一线客服", actor: "工单系统", occurredAt }] };
     }
     if (action.type === "complete_reissue") {
       const occurredAt = now();
@@ -97,21 +96,21 @@ export function DemoSessionProvider({ initialTicket, demoCase, aiMode = "mock", 
     if (action.type === "open_ticket") return { ...current, serviceView: "detail" };
     if (action.type === "back_to_list") return { ...current, serviceView: "list" };
     return current;
-  }, { ticket: createProcessingTicket(initialTicket), runId: 0, serviceView: "live", timeline: initialTimeline(demoCase), hasFollowUp: false, followUpAnalyzing: false, followUpError: null, followUpNotice: null });
+  }, { ticket: createProcessingTicket(initialTicket), runId: 0, serviceView: "live", timeline: initialTimeline(demoCase), hasFollowUp: false, followUpSubmitted: false, followUpAnalyzing: false, followUpError: null, followUpNotice: null });
 
   useEffect(() => {
-    if (state.ticket.workflow.ticket_status !== "ai_processing") return;
+    if (processingPaused || state.ticket.workflow.ticket_status !== "ai_processing") return;
     const timer = window.setTimeout(() => dispatch({ type: "ai_completed" }), processingDelayMs);
     return () => window.clearTimeout(timer);
-  }, [processingDelayMs, state.runId, state.ticket.workflow.ticket_status]);
+  }, [processingDelayMs, processingPaused, state.runId, state.ticket.workflow.ticket_status]);
 
   const analyzeCaseTwoFollowUp = useCallback(async (forceMock: boolean) => {
+    dispatch({ type: "follow_up_started" });
     if (forceMock || aiMode === "mock") {
       dispatch({ type: "add_case_two_request", candidate: caseTwoEscalatedCandidate, source: "mock" });
       return;
     }
 
-    dispatch({ type: "follow_up_started" });
     try {
       const response = await fetch("/api/ai/analyze", {
         method: "POST",
@@ -120,25 +119,24 @@ export function DemoSessionProvider({ initialTicket, demoCase, aiMode = "mock", 
       });
       const result: unknown = await response.json();
       if (!response.ok) {
-        const error = result && typeof result === "object" && "error" in result && typeof result.error === "string" ? result.error : `${providerLabel(aiMode)}追加诉求分析失败。`;
-        throw new Error(error);
+        throw new Error("AI暂时无法分析追加诉求，请稍后重试。");
       }
       const candidate = result && typeof result === "object" && "candidate" in result ? result.candidate : null;
       if (!isAiCandidate(candidate)) throw new Error("服务端返回的AI结果不符合工单契约。");
       const source = result && typeof result === "object" && "mode" in result && (result.mode === "gemini" || result.mode === "deepseek") ? result.mode : aiMode;
       dispatch({ type: "add_case_two_request", candidate, source });
     } catch (error) {
-      dispatch({ type: "follow_up_failed", error: error instanceof Error ? error.message : `${providerLabel(aiMode)}追加诉求分析失败。` });
+      dispatch({ type: "follow_up_failed", error: error instanceof Error ? error.message : "AI暂时无法分析追加诉求，请稍后重试。" });
     }
   }, [aiMode]);
 
   const value = useMemo<SessionContextValue>(() => ({
-    ticket: state.ticket, initialTicket, demoCase, serviceView: state.serviceView, timeline: state.timeline, hasFollowUp: state.hasFollowUp, followUpAnalyzing: state.followUpAnalyzing, followUpError: state.followUpError, followUpNotice: state.followUpNotice,
+    ticket: state.ticket, initialTicket, demoCase, serviceView: state.serviceView, timeline: state.timeline, hasFollowUp: state.hasFollowUp, followUpSubmitted: state.followUpSubmitted, followUpAnalyzing: state.followUpAnalyzing, followUpError: state.followUpError, followUpNotice: state.followUpNotice,
     confirmResolved: () => dispatch({ type: "confirm_resolved" }), requestHuman: () => dispatch({ type: "request_human" }), addCaseTwoRequest: () => analyzeCaseTwoFollowUp(false), continueFollowUpWithMock: () => analyzeCaseTwoFollowUp(true),
     completeReissue: () => dispatch({ type: "complete_reissue" }), notifyDepartment: () => dispatch({ type: "notify_department" }), closeTier1: () => dispatch({ type: "close_tier1" }),
     completeRefund: () => dispatch({ type: "complete_refund" }), registerReport: () => dispatch({ type: "register_report" }), transferDepartment: () => dispatch({ type: "transfer_department" }), closeTier2: () => dispatch({ type: "close_tier2" }),
     openTicket: () => dispatch({ type: "open_ticket" }), backToList: () => dispatch({ type: "back_to_list" }), reset: () => dispatch({ type: "reset" }),
-  }), [analyzeCaseTwoFollowUp, demoCase, initialTicket, state.followUpAnalyzing, state.followUpError, state.followUpNotice, state.hasFollowUp, state.serviceView, state.ticket, state.timeline]);
+  }), [analyzeCaseTwoFollowUp, demoCase, initialTicket, state.followUpAnalyzing, state.followUpError, state.followUpNotice, state.followUpSubmitted, state.hasFollowUp, state.serviceView, state.ticket, state.timeline]);
   return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>;
 }
 

@@ -25,7 +25,7 @@ button, input { font: inherit; }
 .mode-switcher button { padding: 7px 12px; border: 0; border-radius: 999px; color: #5f819b; background: transparent; cursor: pointer; font-size: 11px; font-weight: 800; }
 .mode-switcher button.active { color: white; background: linear-gradient(135deg, #2cb2ff, #138fe8); box-shadow: 0 4px 10px rgba(21,151,245,.2); }
 .mode-switcher button:disabled { cursor: wait; opacity: .8; }
-.mode-switcher small { padding: 0 9px 0 5px; color: #397497; font-size: 9px; font-weight: 700; }
+.mode-spinner { width: 10px; height: 10px; display: inline-block; margin-right: 6px; border: 2px solid rgba(255,255,255,.45); border-top-color: white; border-radius: 50%; animation: spin .75s linear infinite; vertical-align: -1px; }
 .runtime-loading { margin: -12px 8px 18px; padding: 11px 14px; border: 1px solid #a9daf5; border-radius: 12px; color: #24688f; background: #eef9ff; font-size: 12px; line-height: 1.55; }
 .runtime-warning { margin: -12px 8px 18px; padding: 11px 14px; border: 1px solid #f3cf84; border-radius: 12px; color: #80530b; background: #fff8e8; font-size: 12px; line-height: 1.55; }
 .case-switcher { width: fit-content; display: flex; gap: 5px; margin: 0 auto 18px; padding: 5px; border: 1px solid #cde6f5; border-radius: 13px; background: rgba(255,255,255,.8); }

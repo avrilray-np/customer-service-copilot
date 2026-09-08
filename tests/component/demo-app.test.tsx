@@ -13,7 +13,7 @@ async function renderApp(aiRuntime?: AiRuntimeInfo) {
   const ticket = createWaitingTicket(await mockAiProvider.analyze(caseOneInput));
   const caseTwoTicket = createCaseTwoWaitingTicket(await mockAiProvider.analyze(caseTwoInput));
   const caseThreeTicket = createCaseThreeTicket(await mockAiProvider.analyze(caseThreeInput));
-  return render(<DemoApp initialTicket={ticket} caseTwoTicket={caseTwoTicket} caseThreeTicket={caseThreeTicket} aiRuntime={aiRuntime} processingDelayMs={20} />);
+  return render(<DemoApp initialTicket={ticket} caseTwoTicket={caseTwoTicket} caseThreeTicket={caseThreeTicket} aiRuntime={aiRuntime} processingDelayMs={20} sequenceDelayMs={40} />);
 }
 
 afterEach(() => vi.unstubAllGlobals());
@@ -32,7 +32,7 @@ describe("DemoApp", () => {
     expect(screen.getByTestId("ticket-status")).toHaveTextContent("等待用户确认");
     await user.click(screen.getByRole("button", { name: "查看回答依据" }));
     expect(screen.getByText("会员自动续订与退订规则")).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "已解决" }));
+    await user.click(await screen.findByRole("button", { name: "已解决" }));
     expect(screen.getByLabelText("工单列表页")).toBeInTheDocument();
     expect(screen.getByTestId("ticket-status")).toHaveTextContent("已完结");
     expect(screen.getByText("问题已解决")).toBeInTheDocument();
@@ -77,7 +77,7 @@ describe("DemoApp", () => {
 
     await user.click(await screen.findByRole("button", { name: "查看回答依据" }));
     expect(screen.getByText("会员自动续订与退订规则")).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "未解决，转人工" }));
+    await user.click(await screen.findByRole("button", { name: "未解决，转人工" }));
     expect(screen.getByLabelText("工单列表页")).toBeInTheDocument();
     const resetButton = screen.getByRole("button", { name: "重置演示" });
     expect(resetButton.closest(".outside-reset")).toBeInTheDocument();
@@ -100,7 +100,11 @@ describe("DemoApp", () => {
     expect(screen.getByTestId("handling-category")).toHaveTextContent("低风险信息咨询");
     await user.click(followUpButton);
     expect(screen.getByText("帮我补发优惠券，我还要投诉活动规则不清楚。")).toBeInTheDocument();
-    const callback = screen.getByLabelText("客服回电提示");
+    expect(screen.queryByLabelText("AI追加回复")).not.toBeInTheDocument();
+    const followUpReply = await screen.findByLabelText("AI追加回复");
+    expect(followUpReply).toHaveTextContent("补发");
+    expect(screen.queryByText("已转接人工客服")).not.toBeInTheDocument();
+    const callback = await screen.findByLabelText("客服回电提示");
     expect(callback).toHaveTextContent("一线客服 · 回电中");
     expect(callback).not.toHaveTextContent("正在核验补发与投诉信息");
     expect(callback.querySelectorAll(".callback-dots i")).toHaveLength(3);
@@ -150,8 +154,9 @@ describe("DemoApp", () => {
     await renderApp();
     await user.click(screen.getByRole("button", { name: "High-Risk AI Fast-Track" }));
     await waitFor(() => expect(screen.getByLabelText("工单列表页")).toBeInTheDocument());
-    expect(screen.getByText("已转交二线客服")).toBeInTheDocument();
-    expect(screen.getByLabelText("客服回电提示")).toHaveTextContent("二线客服 · 回电中");
+    expect(screen.queryByText("已转交二线客服")).not.toBeInTheDocument();
+    expect(await screen.findByText("已转交二线客服")).toBeInTheDocument();
+    expect(await screen.findByLabelText("客服回电提示")).toHaveTextContent("二线客服 · 回电中");
     expect(screen.getByLabelText("客服回电提示").querySelectorAll(".callback-dots i")).toHaveLength(3);
     expect(screen.getByText("高风险类")).toBeInTheDocument();
     expect(screen.getByTestId("ticket-status")).toHaveTextContent("二线客服处理中");
@@ -185,6 +190,32 @@ describe("DemoApp", () => {
     expect(screen.getByText("payment-risk-joint-queue")).toBeInTheDocument();
   });
 
+  it("reveals each conversation step only after the previous step delay", async () => {
+    const user = userEvent.setup();
+    await renderApp();
+
+    await screen.findByRole("button", { name: "查看回答依据" });
+    expect(screen.queryByRole("button", { name: "已解决" })).not.toBeInTheDocument();
+    await screen.findByRole("button", { name: "已解决" });
+
+    await user.click(screen.getByRole("button", { name: "Low-Risk AI Assist & Handoff" }));
+    await screen.findByRole("button", { name: "查看回答依据" });
+    expect(screen.queryByRole("button", { name: /继续提出：补发并投诉/ })).not.toBeInTheDocument();
+    await user.click(await screen.findByRole("button", { name: /继续提出：补发并投诉/ }));
+
+    expect(screen.getByLabelText("用户追加诉求")).toBeInTheDocument();
+    expect(screen.queryByLabelText("AI追加回复")).not.toBeInTheDocument();
+    expect(screen.queryByText("已转接人工客服")).not.toBeInTheDocument();
+    await screen.findByLabelText("AI追加回复");
+    expect(screen.queryByText("已转接人工客服")).not.toBeInTheDocument();
+    await screen.findByText("已转接人工客服");
+
+    await user.click(screen.getByRole("button", { name: "High-Risk AI Fast-Track" }));
+    await screen.findByRole("button", { name: "查看回答依据" });
+    expect(screen.queryByText("已转交二线客服")).not.toBeInTheDocument();
+    await screen.findByText("已转交二线客服");
+  });
+
   it("starts in Mock Mode without calling the configured AI provider", async () => {
     const fetcher = vi.fn();
     vi.stubGlobal("fetch", fetcher);
@@ -193,6 +224,53 @@ describe("DemoApp", () => {
     expect(screen.getByRole("button", { name: "Mock Mode" })).toHaveAttribute("aria-pressed", "true");
     expect(screen.getByRole("button", { name: "AI Mode" })).toHaveAttribute("aria-pressed", "false");
     expect(fetcher).not.toHaveBeenCalled();
+  });
+
+  it("keeps exactly two mode tabs and a stable AI Mode label while loading", async () => {
+    const user = userEvent.setup();
+    const candidate = await mockAiProvider.analyze(caseOneInput);
+    vi.stubGlobal("fetch", vi.fn().mockImplementation(async () => {
+      await new Promise((resolve) => window.setTimeout(resolve, 30));
+      return new Response(JSON.stringify({ candidate, mode: "deepseek", model: "deepseek-v4-flash" }), { status: 200, headers: { "content-type": "application/json" } });
+    }));
+    await renderApp({ requestedMode: "deepseek", activeMode: "mock", model: "deepseek-v4-flash", warning: null });
+
+    const modeSwitcher = screen.getByRole("group", { name: "AI运行模式" });
+    expect(modeSwitcher.querySelectorAll("button")).toHaveLength(2);
+    await user.click(screen.getByRole("button", { name: "AI Mode" }));
+    expect(screen.getByRole("button", { name: "AI Mode" })).toHaveAttribute("aria-busy", "true");
+    expect(screen.getByRole("group", { name: "AI运行模式" }).querySelector(".mode-spinner")).toBeInTheDocument();
+    expect(screen.queryByText(/AI Loading|DeepSeek|deepseek-v4-flash/)).not.toBeInTheDocument();
+
+    await waitFor(() => expect(screen.getByRole("button", { name: "AI Mode" })).toHaveAttribute("aria-busy", "false"));
+    expect(screen.getByRole("group", { name: "AI运行模式" }).querySelectorAll("button")).toHaveLength(2);
+    expect(screen.queryByText(/DeepSeek|deepseek-v4-flash/)).not.toBeInTheDocument();
+    await user.click(await screen.findByRole("button", { name: "已解决" }));
+    await user.click(screen.getByRole("button", { name: "查看工单详情" }));
+    expect(screen.getByText("customer-service-ai-v1.0")).toBeInTheDocument();
+    expect(screen.queryByText(/DeepSeek|Gemini|deepseek-v4-flash/)).not.toBeInTheDocument();
+  });
+
+  it("does not reveal the AI reply or next action before a slow AI Mode request completes", async () => {
+    const user = userEvent.setup();
+    const candidate = await mockAiProvider.analyze(caseOneInput);
+    let finishRequest: ((response: Response) => void) | undefined;
+    vi.stubGlobal("fetch", vi.fn().mockImplementation(() => new Promise<Response>((resolve) => {
+      finishRequest = resolve;
+    })));
+    await renderApp({ requestedMode: "deepseek", activeMode: "mock", model: "deepseek-v4-flash", warning: null });
+
+    await user.click(screen.getByRole("button", { name: "AI Mode" }));
+    await new Promise((resolve) => window.setTimeout(resolve, 100));
+    expect(screen.getByLabelText("AI正在回复")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "查看回答依据" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "已解决" })).not.toBeInTheDocument();
+
+    finishRequest?.(new Response(JSON.stringify({ candidate, mode: "deepseek", model: "deepseek-v4-flash" }), { status: 200, headers: { "content-type": "application/json" } }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "AI Mode" })).toHaveAttribute("aria-busy", "false"));
+    await screen.findByRole("button", { name: "查看回答依据" });
+    expect(screen.queryByRole("button", { name: "已解决" })).not.toBeInTheDocument();
+    await screen.findByRole("button", { name: "已解决" });
   });
 
   it("loads only the selected case in AI Mode and reuses its page-session cache", async () => {
@@ -208,7 +286,8 @@ describe("DemoApp", () => {
     await renderApp({ requestedMode: "deepseek", activeMode: "mock", model: "deepseek-v4-flash", warning: null });
 
     await user.click(screen.getByRole("button", { name: "AI Mode" }));
-    expect(await screen.findByText("DeepSeek · deepseek-v4-flash")).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByRole("button", { name: "AI Mode" })).toHaveAttribute("aria-busy", "false"));
+    expect(screen.queryByText(/DeepSeek|deepseek-v4-flash/)).not.toBeInTheDocument();
     expect(fetcher).toHaveBeenCalledTimes(1);
     expect(JSON.parse(String(fetcher.mock.calls[0][1].body))).toEqual({ demoCase: "case-one" });
 
@@ -230,7 +309,8 @@ describe("DemoApp", () => {
     await renderApp({ requestedMode: "deepseek", activeMode: "mock", model: "deepseek-v4-flash", warning: null });
 
     await user.click(screen.getByRole("button", { name: "AI Mode" }));
-    expect(await screen.findByRole("alert")).toHaveTextContent("DeepSeek余额不足");
+    expect(await screen.findByRole("alert")).toHaveTextContent("AI暂时无法分析当前案例");
+    expect(screen.getByRole("alert")).not.toHaveTextContent("DeepSeek");
     expect(screen.getByRole("button", { name: "Mock Mode" })).toHaveAttribute("aria-pressed", "true");
     await waitFor(() => expect(screen.getByTestId("ticket-status")).toHaveTextContent("等待用户确认"));
     expect(screen.getByTestId("handling-category")).toHaveTextContent("低风险信息咨询");
@@ -246,10 +326,11 @@ describe("DemoApp", () => {
 
     await user.click(screen.getByRole("button", { name: "Low-Risk AI Assist & Handoff" }));
     await user.click(screen.getByRole("button", { name: "AI Mode" }));
-    await screen.findByText("Gemini · gemini-test");
+    await waitFor(() => expect(screen.getByRole("button", { name: "AI Mode" })).toHaveAttribute("aria-busy", "false"));
     await user.click(await screen.findByRole("button", { name: /继续提出：补发并投诉/ }));
 
-    expect(await screen.findByRole("alert")).toHaveTextContent("Gemini服务暂时不可用");
+    expect(await screen.findByRole("alert")).toHaveTextContent("AI暂时无法分析追加诉求");
+    expect(screen.getByRole("alert")).not.toHaveTextContent("Gemini");
     expect(screen.queryByLabelText("工单列表页")).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "明确使用Mock继续" }));
     expect(screen.getByLabelText("工单列表页")).toBeInTheDocument();
@@ -266,14 +347,15 @@ describe("DemoApp", () => {
 
     await user.click(screen.getByRole("button", { name: "Low-Risk AI Assist & Handoff" }));
     await user.click(screen.getByRole("button", { name: "AI Mode" }));
-    await screen.findByText("DeepSeek · deepseek-v4-flash");
+    await waitFor(() => expect(screen.getByRole("button", { name: "AI Mode" })).toHaveAttribute("aria-busy", "false"));
     await user.click(await screen.findByRole("button", { name: /继续提出：补发并投诉/ }));
 
-    expect(await screen.findByRole("alert")).toHaveTextContent("DeepSeek服务暂时不可用");
+    expect(await screen.findByRole("alert")).toHaveTextContent("AI暂时无法分析追加诉求");
+    expect(screen.getByRole("alert")).not.toHaveTextContent("DeepSeek");
     expect(screen.queryByLabelText("工单列表页")).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "重试DeepSeek" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "重试AI" })).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "明确使用Mock继续" }));
     expect(screen.getByLabelText("工单列表页")).toBeInTheDocument();
-    expect(screen.getByText(/DeepSeek分析失败后.*明确选择使用Mock结果继续/)).toBeInTheDocument();
+    expect(screen.getByText(/AI分析失败后.*明确选择使用Mock结果继续/)).toBeInTheDocument();
   });
 });

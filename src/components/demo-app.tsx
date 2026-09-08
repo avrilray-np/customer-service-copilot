@@ -40,16 +40,8 @@ function formatDate(value: string | null | undefined) {
   return new Intl.DateTimeFormat("zh-CN", { year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false }).format(new Date(value));
 }
 
-function providerLabel(mode: AiRuntimeInfo["activeMode"]) {
-  return mode === "deepseek" ? "DeepSeek" : mode === "gemini" ? "Gemini" : "Mock AI";
-}
-
-function promptVersion(mode: Exclude<AiMode, "mock">) {
-  return mode === "deepseek" ? "customer-service-deepseek-v1.0" : "customer-service-gemini-v1.0";
-}
-
-function createDemoTicket(demoCase: DemoCase, candidate: AiAnalysisCandidate, mode: Exclude<AiMode, "mock">) {
-  const options = { promptVersion: promptVersion(mode) };
+function createDemoTicket(demoCase: DemoCase, candidate: AiAnalysisCandidate) {
+  const options = { promptVersion: "customer-service-ai-v1.0" };
   const ticket = demoCase === "case-one"
     ? createWaitingTicket(candidate, options)
     : demoCase === "case-two"
@@ -62,25 +54,38 @@ function createDemoTicket(demoCase: DemoCase, candidate: AiAnalysisCandidate, mo
 type DisplayMode = "mock" | "ai";
 type DemoTicketMap = Record<DemoCase, Ticket>;
 
+function useDelayedReveal(active: boolean, delayMs: number, sequenceRunId: number) {
+  const [revealedRunId, setRevealedRunId] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!active) return;
+    const timer = window.setTimeout(() => setRevealedRunId(sequenceRunId), delayMs);
+    return () => window.clearTimeout(timer);
+  }, [active, delayMs, sequenceRunId]);
+
+  return active && revealedRunId === sequenceRunId;
+}
+
 export function DemoApp({
   initialTicket,
   caseTwoTicket,
   caseThreeTicket,
   aiRuntime = { requestedMode: "mock", activeMode: "mock", model: null, warning: null },
   processingDelayMs,
+  sequenceDelayMs = 2000,
 }: {
   initialTicket: Ticket;
   caseTwoTicket?: Ticket;
   caseThreeTicket?: Ticket;
   aiRuntime?: AiRuntimeInfo;
   processingDelayMs?: number;
+  sequenceDelayMs?: number;
 }) {
   const [selectedCase, setSelectedCase] = useState<DemoCase>("case-one");
   const [displayMode, setDisplayMode] = useState<DisplayMode>("mock");
   const [aiTickets, setAiTickets] = useState<Partial<DemoTicketMap>>({});
   const [aiLoading, setAiLoading] = useState(false);
   const [aiError, setAiError] = useState<string | null>(null);
-  const [activeModel, setActiveModel] = useState(aiRuntime.model);
   const requestSequence = useRef(0);
   const mockTickets: DemoTicketMap = {
     "case-one": initialTicket,
@@ -115,18 +120,17 @@ export function DemoApp({
       if (!response.ok) {
         const message = result && typeof result === "object" && "error" in result && typeof result.error === "string"
           ? result.error
-          : `${providerLabel(configuredAiMode)}暂时无法分析当前案例。`;
+          : "AI暂时无法分析当前案例。";
         throw new Error(message);
       }
       const candidate = result && typeof result === "object" && "candidate" in result ? result.candidate : null;
       if (!isAiCandidate(candidate)) throw new Error("服务端返回的AI结果不符合工单契约。");
-      const ticket = createDemoTicket(demoCase, candidate, configuredAiMode);
+      const ticket = createDemoTicket(demoCase, candidate);
       setAiTickets((current) => ({ ...current, [demoCase]: ticket }));
-      if (result && typeof result === "object" && "model" in result && typeof result.model === "string") setActiveModel(result.model);
     } catch (error) {
       if (requestId === requestSequence.current) {
         setDisplayMode("mock");
-        setAiError(error instanceof Error ? error.message : `${providerLabel(configuredAiMode)}暂时无法分析当前案例。`);
+        setAiError(error instanceof Error && !error.message.includes("DeepSeek") && !error.message.includes("Gemini") ? error.message : "AI暂时无法分析当前案例，请稍后重试。" );
       }
     } finally {
       if (requestId === requestSequence.current) setAiLoading(false);
@@ -156,19 +160,20 @@ export function DemoApp({
   const currentRuntime: AiRuntimeInfo = {
     requestedMode: aiRuntime.requestedMode,
     activeMode: activeProviderMode,
-    model: activeProviderMode === "mock" ? null : activeModel,
+    model: null,
     warning: aiError,
   };
   return (
-    <DemoSessionProvider key={`${selectedCase}-${displayMode}-${aiLoading ? "loading" : "ready"}`} initialTicket={activeTicket} demoCase={selectedCase} aiMode={activeProviderMode} processingDelayMs={processingDelayMs}>
-      <DemoScreen selectedCase={selectedCase} onSelectCase={selectCase} caseTwoAvailable={Boolean(caseTwoTicket)} caseThreeAvailable={Boolean(caseThreeTicket)} aiRuntime={currentRuntime} displayMode={displayMode} onSelectMode={selectMode} aiLoading={aiLoading} />
+    <DemoSessionProvider key={`${selectedCase}-${displayMode}-${aiLoading ? "loading" : "ready"}`} initialTicket={activeTicket} demoCase={selectedCase} aiMode={activeProviderMode} processingDelayMs={processingDelayMs} processingPaused={aiLoading}>
+      <DemoScreen selectedCase={selectedCase} onSelectCase={selectCase} caseTwoAvailable={Boolean(caseTwoTicket)} caseThreeAvailable={Boolean(caseThreeTicket)} aiRuntime={currentRuntime} displayMode={displayMode} onSelectMode={selectMode} aiLoading={aiLoading} sequenceDelayMs={sequenceDelayMs} />
     </DemoSessionProvider>
   );
 }
 
-function DemoScreen({ selectedCase, onSelectCase, caseTwoAvailable, caseThreeAvailable, aiRuntime, displayMode, onSelectMode, aiLoading }: { selectedCase: DemoCase; onSelectCase: (value: DemoCase) => void; caseTwoAvailable: boolean; caseThreeAvailable: boolean; aiRuntime: AiRuntimeInfo; displayMode: DisplayMode; onSelectMode: (mode: DisplayMode) => void; aiLoading: boolean }) {
-  const { ticket, initialTicket, demoCase, serviceView, timeline, hasFollowUp, followUpAnalyzing, followUpError, followUpNotice, confirmResolved, requestHuman, addCaseTwoRequest, continueFollowUpWithMock, completeReissue, notifyDepartment, closeTier1, completeRefund, registerReport, transferDepartment, closeTier2, openTicket, backToList, reset } = useDemoSession();
+function DemoScreen({ selectedCase, onSelectCase, caseTwoAvailable, caseThreeAvailable, aiRuntime, displayMode, onSelectMode, aiLoading, sequenceDelayMs }: { selectedCase: DemoCase; onSelectCase: (value: DemoCase) => void; caseTwoAvailable: boolean; caseThreeAvailable: boolean; aiRuntime: AiRuntimeInfo; displayMode: DisplayMode; onSelectMode: (mode: DisplayMode) => void; aiLoading: boolean; sequenceDelayMs: number }) {
+  const { ticket, initialTicket, demoCase, serviceView, timeline, hasFollowUp, followUpSubmitted, followUpError, followUpNotice, confirmResolved, requestHuman, addCaseTwoRequest, continueFollowUpWithMock, completeReissue, notifyDepartment, closeTier1, completeRefund, registerReport, transferDepartment, closeTier2, openTicket, backToList, reset } = useDemoSession();
   const [showSources, setShowSources] = useState(false);
+  const [sequenceRunId, setSequenceRunId] = useState(0);
   const processing = ticket.workflow.ticket_status === "ai_processing";
   const waiting = ticket.workflow.ticket_status === "waiting_user_confirmation";
   const closed = ticket.workflow.ticket_status === "closed";
@@ -180,9 +185,15 @@ function DemoScreen({ selectedCase, onSelectCase, caseTwoAvailable, caseThreeAva
   const refundDone = Boolean(ticket.resolution.action_result?.includes("模拟退款30元成功"));
   const reportDone = Boolean(ticket.resolution.action_result?.includes("举报诉求已登记"));
   const departmentProcessing = ticket.workflow.ticket_status === "department_processing";
+  const showInitialNextStep = useDelayedReveal(!processing, sequenceDelayMs, sequenceRunId);
+  const followUpWaitFinished = useDelayedReveal(followUpSubmitted, sequenceDelayMs, sequenceRunId);
+  const showFollowUpReply = hasFollowUp && followUpWaitFinished;
+  const showDelayedTransfer = useDelayedReveal(isCaseThree ? !processing : showFollowUpReply, sequenceDelayMs, sequenceRunId);
+  const showTransfer = transferred && (isCaseThree || isCaseTwo ? showDelayedTransfer : true);
 
   const resetDemo = () => {
     setShowSources(false);
+    setSequenceRunId((value) => value + 1);
     reset();
   };
 
@@ -202,12 +213,11 @@ function DemoScreen({ selectedCase, onSelectCase, caseTwoAvailable, caseThreeAva
           </div>
           <div className="mode-switcher" role="group" aria-label="AI运行模式">
             <button type="button" aria-pressed={displayMode === "mock"} className={displayMode === "mock" ? "active" : ""} onClick={() => onSelectMode("mock")}>Mock Mode</button>
-            <button type="button" aria-pressed={displayMode === "ai"} className={displayMode === "ai" ? "active" : ""} onClick={() => onSelectMode("ai")} disabled={aiLoading}>{aiLoading ? "AI Loading…" : "AI Mode"}</button>
-            {displayMode === "ai" && !aiLoading && aiRuntime.activeMode !== "mock" && <small>{providerLabel(aiRuntime.activeMode)} · {aiRuntime.model}</small>}
+            <button type="button" aria-pressed={displayMode === "ai"} aria-busy={aiLoading} className={displayMode === "ai" ? "active" : ""} onClick={() => onSelectMode("ai")} disabled={aiLoading}>{aiLoading && <span className="mode-spinner" aria-hidden="true" />}AI Mode</button>
           </div>
         </header>
 
-        {aiLoading && <div className="runtime-loading" role="status">正在使用{providerLabel(aiRuntime.requestedMode)}分析当前案例，仅本次首次查看会产生调用。</div>}
+        {aiLoading && <div className="runtime-loading" role="status">AI正在分析当前案例，仅本次首次查看会产生调用。</div>}
         {aiRuntime.warning && <div className="runtime-warning" role="alert"><strong>AI Mode未启用：</strong>{aiRuntime.warning} 当前仍使用Mock演示数据。</div>}
 
         <div className="dual-stage">
@@ -262,21 +272,19 @@ function DemoScreen({ selectedCase, onSelectCase, caseTwoAvailable, caseThreeAva
                   </div>
                 )}
 
-                {hasFollowUp && <>
-                  <div className="message user response-enter"><div className="message-label">你 · 10:16</div><div className="bubble">{caseTwoFollowUp}</div></div>
-                  <div className="message ai response-enter"><div className="message-label">AI客服 · 10:16</div><div className="bubble">{ticket.ai_processing.reply}</div></div>
-                </>}
+                {followUpSubmitted && <div className="message user response-enter" aria-label="用户追加诉求"><div className="message-label">你 · 10:16</div><div className="bubble">{caseTwoFollowUp}</div></div>}
+                {showFollowUpReply && <div className="message ai response-enter" aria-label="AI追加回复"><div className="message-label">AI客服 · 10:16</div><div className="bubble">{ticket.ai_processing.reply}</div></div>}
 
-                {waiting && !isCaseTwo && (
+                {waiting && !isCaseTwo && showInitialNextStep && (
                   <div className="actions">
                     <button className="button primary" onClick={confirmResolved}>已解决</button>
                     <button className="button" onClick={requestHuman}>未解决，转人工</button>
                   </div>
                 )}
 
-                {waiting && isCaseTwo && <div className="follow-up-action"><button type="button" onClick={() => void addCaseTwoRequest()} disabled={followUpAnalyzing}>{followUpAnalyzing ? `${providerLabel(aiRuntime.activeMode)}正在分析追加诉求…` : "继续提出：补发并投诉"} <span>›</span></button></div>}
+                {waiting && isCaseTwo && showInitialNextStep && !followUpSubmitted && <div className="follow-up-action"><button type="button" onClick={() => void addCaseTwoRequest()}>继续提出：补发并投诉 <span>›</span></button></div>}
 
-                {followUpError && <div className="follow-up-error" role="alert"><strong>{providerLabel(aiRuntime.activeMode)}分析失败</strong><p>{followUpError}</p><div><button type="button" onClick={() => void addCaseTwoRequest()}>重试{providerLabel(aiRuntime.activeMode)}</button><button type="button" onClick={() => void continueFollowUpWithMock()}>明确使用Mock继续</button></div></div>}
+                {followUpError && <div className="follow-up-error" role="alert"><strong>AI分析失败</strong><p>{followUpError}</p><div><button type="button" onClick={() => void addCaseTwoRequest()}>重试AI</button><button type="button" onClick={() => void continueFollowUpWithMock()}>明确使用Mock继续</button></div></div>}
                 {followUpNotice && <div className="follow-up-notice" role="status">{followUpNotice}</div>}
 
                 {closed && (
@@ -286,14 +294,14 @@ function DemoScreen({ selectedCase, onSelectCase, caseTwoAvailable, caseThreeAva
                   </div>
                 )}
 
-                {transferred && (
+                {showTransfer && (
                   <div className="result-card transfer-card" role="status">
                     <div className="result-icon">→</div>
                     <div><h4>{isCaseThree ? "已转交二线客服" : "已转接人工客服"}</h4><p>{isCaseThree ? "二线客服将核验扣费、退款与举报信息。" : "一线客服将继续跟进，请稍候。"}</p></div>
                   </div>
                 )}
 
-                {transferred && (isCaseTwo || isCaseThree) && (
+                {showTransfer && (isCaseTwo || isCaseThree) && (
                   <div className="message ai agent-callback response-enter" aria-label="客服回电提示">
                     <div className="message-label">{isCaseThree ? "二线客服" : "一线客服"} · 回电中</div>
                     <div className="bubble"><PhoneIcon /><span className="callback-dots" aria-label="接通中"><i /><i /><i /></span></div>
