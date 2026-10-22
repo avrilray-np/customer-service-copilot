@@ -1,0 +1,12 @@
+{"eval_id":"BM25-001","query":"我已经关掉连续包月了，为什么现在会员还能继续用？","query_time":"2026-10-21T10:00:00+08:00","audience":"ai","known_product_type":"continuous_monthly","relevant_chunk_ids":["KB-MEMBER-001#cancel-current-entitlement"]}
+{"eval_id":"BM25-002","query":"取消自动续订以后，下个月还会继续扣钱吗？","query_time":"2026-10-21T10:00:00+08:00","audience":"ai","known_product_type":"continuous_monthly","relevant_chunk_ids":["KB-MEMBER-001#cancel-next-charge"]}
+{"eval_id":"BM25-003","query":"普通月卡能参加现在的50元优惠券活动吗？","query_time":"2026-10-21T10:00:00+08:00","audience":"ai","known_product_type":"ordinary_monthly_card","relevant_chunk_ids":["KB-BENEFIT-003#eligible-products-current"]}
+{"eval_id":"BM25-004","query":"会员赠送的优惠券一直没到账，帮我看看发放状态","query_time":"2026-10-21T10:00:00+08:00","audience":"ai","known_product_type":null,"relevant_chunk_ids":["KB-BENEFIT-003#coupon-status-data"]}
+{"eval_id":"BM25-005","query":"活动页面没有把资格写清楚，我要求投诉并审核补偿","query_time":"2026-10-21T10:00:00+08:00","audience":"tier1","known_product_type":"ordinary_monthly_card","relevant_chunk_ids":["KB-BENEFIT-004#qualification-dispute-review"]}
+{"eval_id":"BM25-006","query":"刚扣的30元马上退给我","query_time":"2026-10-21T10:00:00+08:00","audience":"ai","known_product_type":null,"relevant_chunk_ids":["KB-REFUND-007#refund-tier2"]}
+{"eval_id":"BM25-007","query":"我上周取消了续订，今天为什么仍然扣款？","query_time":"2026-10-21T10:00:00+08:00","audience":"ai","known_product_type":"continuous_monthly","relevant_chunk_ids":["KB-REFUND-007#post-cancellation-charge"]}
+{"eval_id":"BM25-008","query":"账号好像被别人登录，还有一笔不是我的扣费","query_time":"2026-10-21T10:00:00+08:00","audience":"ai","known_product_type":null,"relevant_chunk_ids":["KB-SECURITY-008#account-security"]}
+{"eval_id":"BM25-009","query":"帮我修改会员绑定的手机号","query_time":"2026-10-21T10:00:00+08:00","audience":"ai","known_product_type":null,"relevant_chunk_ids":["KB-ACCOUNT-009#profile-change"]}
+{"eval_id":"BM25-010","query":"我的会员具体什么时候到期？","query_time":"2026-10-21T10:00:00+08:00","audience":"ai","known_product_type":null,"relevant_chunk_ids":["KB-MEMBER-002#membership-expiry-query"]}
+{"eval_id":"BM25-011","query":"普通月卡赠券支付后是不是即时到账？","query_time":"2026-10-21T10:00:00+08:00","audience":"ai","known_product_type":"ordinary_monthly_card","relevant_chunk_ids":["KB-BENEFIT-003#eligible-products-current","KB-BENEFIT-003#coupon-delivery-window"]}
+{"eval_id":"BM25-012","query":"我不想用了，帮我处理一下","query_time":"2026-10-21T10:00:00+08:00","audience":"ai","known_product_type":null,"relevant_chunk_ids":["KB-OPERATION-005#ambiguous-request"]}

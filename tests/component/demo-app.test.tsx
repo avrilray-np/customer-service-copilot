@@ -4,16 +4,16 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import type { AiRuntimeInfo } from "@/ai/types";
 import { DemoApp } from "@/components/demo-app";
 import { createCaseThreeTicket, createCaseTwoWaitingTicket, createWaitingTicket } from "@/domain/ticket/create-ticket";
-import { mockAiProvider } from "@/ai/mock-ai-provider";
 import { caseOneInput } from "@/data/demos/case-one";
 import { caseTwoInput } from "@/data/demos/case-two";
-import { caseThreeInput } from "@/data/demos/case-three";
+import { mockCandidateFor, mockDemoData } from "../helpers/mock-rag";
 
 async function renderApp(aiRuntime?: AiRuntimeInfo) {
-  const ticket = createWaitingTicket(await mockAiProvider.analyze(caseOneInput));
-  const caseTwoTicket = createCaseTwoWaitingTicket(await mockAiProvider.analyze(caseTwoInput));
-  const caseThreeTicket = createCaseThreeTicket(await mockAiProvider.analyze(caseThreeInput));
-  return render(<DemoApp initialTicket={ticket} caseTwoTicket={caseTwoTicket} caseThreeTicket={caseThreeTicket} aiRuntime={aiRuntime} processingDelayMs={20} sequenceDelayMs={40} />);
+  const data = await mockDemoData();
+  const ticket = createWaitingTicket(data.caseOne.candidate, { knowledgeBaseVersion: data.caseOne.trace.knowledge_base_version });
+  const caseTwoTicket = createCaseTwoWaitingTicket(data.caseTwo.candidate, { knowledgeBaseVersion: data.caseTwo.trace.knowledge_base_version });
+  const caseThreeTicket = createCaseThreeTicket(data.caseThree.candidate, { knowledgeBaseVersion: data.caseThree.trace.knowledge_base_version });
+  return render(<DemoApp initialTicket={ticket} caseTwoTicket={caseTwoTicket} caseThreeTicket={caseThreeTicket} initialRetrievalTraces={{ "case-one": data.caseOne.trace, "case-two": data.caseTwo.trace, "case-three": data.caseThree.trace }} caseTwoFollowUpCandidate={data.caseTwoFollowUp.candidate} caseTwoFollowUpTrace={data.caseTwoFollowUp.trace} aiRuntime={aiRuntime} processingDelayMs={20} sequenceDelayMs={40} />);
 }
 
 afterEach(() => vi.unstubAllGlobals());
@@ -31,7 +31,7 @@ describe("DemoApp", () => {
     await screen.findByRole("button", { name: "查看回答依据" });
     expect(screen.getByTestId("ticket-status")).toHaveTextContent("等待用户确认");
     await user.click(screen.getByRole("button", { name: "查看回答依据" }));
-    expect(screen.getByText("会员自动续订与退订规则")).toBeInTheDocument();
+    expect(screen.getAllByText("会员自动续订与退订规则").length).toBeGreaterThan(0);
     await user.click(await screen.findByRole("button", { name: "已解决" }));
     expect(screen.getByLabelText("工单列表页")).toBeInTheDocument();
     expect(screen.getByTestId("ticket-status")).toHaveTextContent("已完结");
@@ -48,6 +48,13 @@ describe("DemoApp", () => {
     expect(screen.getByLabelText("工单基础信息").querySelectorAll(".meta-item")).toHaveLength(0);
     expect(screen.getByText("语音转写", { exact: true })).toBeInTheDocument();
     expect(screen.getByLabelText("原始录音与转写")).toBeInTheDocument();
+    const retrievalTrace = screen.getByLabelText("检索轨迹");
+    expect(retrievalTrace).not.toHaveAttribute("open");
+    await user.click(screen.getByText("查看检索轨迹"));
+    expect(retrievalTrace).toHaveAttribute("open");
+    expect(retrievalTrace).toHaveTextContent("hybrid / bm25");
+    expect(retrievalTrace).toHaveTextContent("KB-MEMBER-001#");
+    expect(retrievalTrace).toHaveTextContent("BM25 #");
     await user.click(screen.getByRole("button", { name: "播放模拟录音" }));
     expect(screen.getByRole("button", { name: "暂停模拟录音" })).toBeInTheDocument();
     expect(screen.getByLabelText("工单流转轨迹")).toHaveTextContent("用户确认问题已解决");
@@ -76,7 +83,7 @@ describe("DemoApp", () => {
     await renderApp();
 
     await user.click(await screen.findByRole("button", { name: "查看回答依据" }));
-    expect(screen.getByText("会员自动续订与退订规则")).toBeInTheDocument();
+    expect(screen.getAllByText("会员自动续订与退订规则").length).toBeGreaterThan(0);
     await user.click(await screen.findByRole("button", { name: "未解决，转人工" }));
     expect(screen.getByLabelText("工单列表页")).toBeInTheDocument();
     const resetButton = screen.getByRole("button", { name: "重置演示" });
@@ -228,10 +235,11 @@ describe("DemoApp", () => {
 
   it("keeps exactly two mode tabs and a stable AI Mode label while loading", async () => {
     const user = userEvent.setup();
-    const candidate = await mockAiProvider.analyze(caseOneInput);
+    const prepared = await mockCandidateFor(caseOneInput);
+    const candidate = prepared.candidate;
     vi.stubGlobal("fetch", vi.fn().mockImplementation(async () => {
       await new Promise((resolve) => window.setTimeout(resolve, 30));
-      return new Response(JSON.stringify({ candidate, mode: "deepseek", model: "deepseek-v4-flash" }), { status: 200, headers: { "content-type": "application/json" } });
+      return new Response(JSON.stringify({ candidate, retrieval_trace: prepared.trace, mode: "deepseek", model: "deepseek-v4-flash" }), { status: 200, headers: { "content-type": "application/json" } });
     }));
     await renderApp({ requestedMode: "deepseek", activeMode: "mock", model: "deepseek-v4-flash", warning: null });
 
@@ -253,7 +261,8 @@ describe("DemoApp", () => {
 
   it("does not reveal the AI reply or next action before a slow AI Mode request completes", async () => {
     const user = userEvent.setup();
-    const candidate = await mockAiProvider.analyze(caseOneInput);
+    const prepared = await mockCandidateFor(caseOneInput);
+    const candidate = prepared.candidate;
     let finishRequest: ((response: Response) => void) | undefined;
     vi.stubGlobal("fetch", vi.fn().mockImplementation(() => new Promise<Response>((resolve) => {
       finishRequest = resolve;
@@ -266,7 +275,7 @@ describe("DemoApp", () => {
     expect(screen.queryByRole("button", { name: "查看回答依据" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "已解决" })).not.toBeInTheDocument();
 
-    finishRequest?.(new Response(JSON.stringify({ candidate, mode: "deepseek", model: "deepseek-v4-flash" }), { status: 200, headers: { "content-type": "application/json" } }));
+    finishRequest?.(new Response(JSON.stringify({ candidate, retrieval_trace: prepared.trace, mode: "deepseek", model: "deepseek-v4-flash" }), { status: 200, headers: { "content-type": "application/json" } }));
     await waitFor(() => expect(screen.getByRole("button", { name: "AI Mode" })).toHaveAttribute("aria-busy", "false"));
     await screen.findByRole("button", { name: "查看回答依据" });
     expect(screen.queryByRole("button", { name: "已解决" })).not.toBeInTheDocument();
@@ -275,12 +284,12 @@ describe("DemoApp", () => {
 
   it("loads only the selected case in AI Mode and reuses its page-session cache", async () => {
     const user = userEvent.setup();
-    const caseOneCandidate = await mockAiProvider.analyze(caseOneInput);
-    const caseTwoCandidate = await mockAiProvider.analyze(caseTwoInput);
+    const caseOnePrepared = await mockCandidateFor(caseOneInput);
+    const caseTwoPrepared = await mockCandidateFor(caseTwoInput);
     const fetcher = vi.fn().mockImplementation(async (_url: string, init: RequestInit) => {
       const { demoCase } = JSON.parse(String(init.body));
-      const candidate = demoCase === "case-two" ? caseTwoCandidate : caseOneCandidate;
-      return new Response(JSON.stringify({ candidate, mode: "deepseek", model: "deepseek-v4-flash" }), { status: 200, headers: { "content-type": "application/json" } });
+      const prepared = demoCase === "case-two" ? caseTwoPrepared : caseOnePrepared;
+      return new Response(JSON.stringify({ candidate: prepared.candidate, retrieval_trace: prepared.trace, mode: "deepseek", model: "deepseek-v4-flash" }), { status: 200, headers: { "content-type": "application/json" } });
     });
     vi.stubGlobal("fetch", fetcher);
     await renderApp({ requestedMode: "deepseek", activeMode: "mock", model: "deepseek-v4-flash", warning: null });
@@ -318,9 +327,9 @@ describe("DemoApp", () => {
 
   it("keeps a failed Gemini follow-up pending until the user explicitly chooses Mock", async () => {
     const user = userEvent.setup();
-    const initialCandidate = await mockAiProvider.analyze(caseTwoInput);
+    const initialPrepared = await mockCandidateFor(caseTwoInput);
     vi.stubGlobal("fetch", vi.fn()
-      .mockResolvedValueOnce(new Response(JSON.stringify({ candidate: initialCandidate, mode: "gemini", model: "gemini-test" }), { status: 200, headers: { "content-type": "application/json" } }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ candidate: initialPrepared.candidate, retrieval_trace: initialPrepared.trace, mode: "gemini", model: "gemini-test" }), { status: 200, headers: { "content-type": "application/json" } }))
       .mockResolvedValueOnce(new Response(JSON.stringify({ error: "Gemini服务暂时不可用。" }), { status: 502, headers: { "content-type": "application/json" } })));
     await renderApp({ requestedMode: "gemini", activeMode: "mock", model: "gemini-test", warning: null });
 
@@ -339,9 +348,9 @@ describe("DemoApp", () => {
 
   it("keeps a failed DeepSeek follow-up pending until the user explicitly chooses Mock", async () => {
     const user = userEvent.setup();
-    const initialCandidate = await mockAiProvider.analyze(caseTwoInput);
+    const initialPrepared = await mockCandidateFor(caseTwoInput);
     vi.stubGlobal("fetch", vi.fn()
-      .mockResolvedValueOnce(new Response(JSON.stringify({ candidate: initialCandidate, mode: "deepseek", model: "deepseek-v4-flash" }), { status: 200, headers: { "content-type": "application/json" } }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ candidate: initialPrepared.candidate, retrieval_trace: initialPrepared.trace, mode: "deepseek", model: "deepseek-v4-flash" }), { status: 200, headers: { "content-type": "application/json" } }))
       .mockResolvedValueOnce(new Response(JSON.stringify({ error: "DeepSeek服务暂时不可用。" }), { status: 502, headers: { "content-type": "application/json" } })));
     await renderApp({ requestedMode: "deepseek", activeMode: "mock", model: "deepseek-v4-flash", warning: null });
 

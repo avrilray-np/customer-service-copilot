@@ -11,7 +11,7 @@
     "reply",
     "evidence_status",
     "recommended_action",
-    "knowledge_source_ids",
+    "knowledge_chunk_ids",
     "user_data_source_names",
     "missing_information"
   ],
@@ -40,7 +40,7 @@
       "type": "string",
       "enum": ["reply", "ask_clarification", "assign_tier1", "assign_tier2", "notify_department"]
     },
-    "knowledge_source_ids": {
+    "knowledge_chunk_ids": {
       "type": "array",
       "uniqueItems": true,
       "items": { "type": "string" }

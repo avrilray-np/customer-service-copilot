@@ -1,0 +1,1601 @@
+{
+  "generated_at": "2026-10-22T02:36:40.667Z",
+  "knowledge_base_version": "kb-2026.10-rag-v0.1",
+  "embedding_provider": "siliconflow",
+  "embedding_model": "BAAI/bge-m3",
+  "dimensions": 1024,
+  "case_count": 30,
+  "answerable_case_count": 28,
+  "top_k": 3,
+  "lexical_fallback_enabled": false,
+  "generation_evaluation_status": "not_run",
+  "modes": [
+    {
+      "mode": "bm25",
+      "case_count": 30,
+      "answerable_case_count": 28,
+      "recall_at_3": 0.875,
+      "mrr": 0.9047619047619048,
+      "precision_at_3": 0.44444444444444453,
+      "answerability_accuracy": 1,
+      "average_total_ms": 0.28323333333333334,
+      "total_latency_ms": {
+        "p50": 0.214,
+        "p95": 0.505
+      },
+      "embedding_latency_ms": null,
+      "cases": [
+        {
+          "eval_id": "RAG-001",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 0.5,
+          "precision_at_3": 0.3333333333333333,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-BENEFIT-003#eligible-products-current",
+            "KB-MEMBER-001#cancel-current-entitlement",
+            "KB-MEMBER-001#unsubscribe-human-action"
+          ],
+          "total_ms": 1.486,
+          "mode_used": "bm25",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-002",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.3333333333333333,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-MEMBER-001#cancel-next-charge",
+            "KB-MEMBER-001#cancel-not-refund",
+            "KB-REFUND-007#post-cancellation-charge"
+          ],
+          "total_ms": 0.505,
+          "mode_used": "bm25",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-003",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.3333333333333333,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-MEMBER-001#unsubscribe-human-action",
+            "KB-BENEFIT-003#eligible-products-current",
+            "KB-MEMBER-001#cancel-current-entitlement"
+          ],
+          "total_ms": 0.283,
+          "mode_used": "bm25",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-004",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.6666666666666666,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-MEMBER-001#cancel-not-refund",
+            "KB-MEMBER-001#unsubscribe-human-action",
+            "KB-OPERATION-005#ambiguous-request"
+          ],
+          "total_ms": 0.395,
+          "mode_used": "bm25",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-005",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.3333333333333333,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-MEMBER-002#membership-expiry-query",
+            "KB-MEMBER-001#cancel-current-entitlement",
+            "KB-MEMBER-002#general-benefit-query"
+          ],
+          "total_ms": 0.237,
+          "mode_used": "bm25",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-006",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.3333333333333333,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-MEMBER-002#membership-status-identity",
+            "KB-MEMBER-001#cancel-next-charge",
+            "KB-ACCOUNT-009#profile-change"
+          ],
+          "total_ms": 0.42,
+          "mode_used": "bm25",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-007",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 0.5,
+          "precision_at_3": 0.3333333333333333,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-MEMBER-001#cancel-current-entitlement",
+            "KB-MEMBER-002#general-benefit-query",
+            "KB-REFUND-007#refund-with-reissue"
+          ],
+          "total_ms": 0.249,
+          "mode_used": "bm25",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-008",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.6666666666666666,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-BENEFIT-003#eligible-products-current",
+            "KB-BENEFIT-003#ineligible-no-auto-reissue",
+            "KB-COMPLAINT-006#department-routing"
+          ],
+          "total_ms": 0.264,
+          "mode_used": "bm25",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-009",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.3333333333333333,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-BENEFIT-003#coupon-delivery-window",
+            "KB-BENEFIT-003#ineligible-no-auto-reissue",
+            "KB-REFUND-007#refund-tier2"
+          ],
+          "total_ms": 0.284,
+          "mode_used": "bm25",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-010",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.6666666666666666,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-BENEFIT-003#coupon-status-data",
+            "KB-BENEFIT-003#coupon-delivery-window",
+            "KB-OPERATION-005#write-action-tier1"
+          ],
+          "total_ms": 0.364,
+          "mode_used": "bm25",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-011",
+          "answerability": "answerable",
+          "recall_at_3": 0.5,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.6666666666666666,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-BENEFIT-003#ineligible-no-auto-reissue",
+            "KB-BENEFIT-003#eligible-products-current",
+            "KB-MEMBER-001#cancel-next-charge"
+          ],
+          "total_ms": 0.229,
+          "mode_used": "bm25",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-012",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.6666666666666666,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-BENEFIT-004#qualification-dispute-review",
+            "KB-BENEFIT-004#compensation-missing-information",
+            "KB-BENEFIT-003#coupon-delivery-window"
+          ],
+          "total_ms": 0.334,
+          "mode_used": "bm25",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-013",
+          "answerability": "answerable",
+          "recall_at_3": 0,
+          "reciprocal_rank": 0,
+          "precision_at_3": 0.3333333333333333,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-BENEFIT-004#compensation-missing-information",
+            "KB-BENEFIT-003#ineligible-no-auto-reissue",
+            "KB-BENEFIT-004#qualification-dispute-review"
+          ],
+          "total_ms": 0.305,
+          "mode_used": "bm25",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-014",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.6666666666666666,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-COMPLAINT-006#complaint-registration",
+            "KB-BENEFIT-003#coupon-status-data",
+            "KB-COMPLAINT-006#department-routing"
+          ],
+          "total_ms": 0.183,
+          "mode_used": "bm25",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-015",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.6666666666666666,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-COMPLAINT-006#department-routing",
+            "KB-COMPLAINT-006#complaint-registration",
+            "KB-BENEFIT-004#compensation-missing-information"
+          ],
+          "total_ms": 0.271,
+          "mode_used": "bm25",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-016",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.6666666666666666,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-COMPLAINT-006#suggestion-notification",
+            "KB-MEMBER-002#membership-expiry-query",
+            "KB-COMPLAINT-006#department-routing"
+          ],
+          "total_ms": 0.213,
+          "mode_used": "bm25",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-017",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.3333333333333333,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-OPERATION-005#status-query-readonly",
+            "KB-REFUND-007#refund-with-reissue",
+            "KB-OPERATION-005#write-action-tier1"
+          ],
+          "total_ms": 0.17,
+          "mode_used": "bm25",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-018",
+          "answerability": "answerable",
+          "recall_at_3": 0.5,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.3333333333333333,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-ACCOUNT-009#profile-change",
+            "KB-MEMBER-001#unsubscribe-human-action",
+            "KB-ACCOUNT-009#personal-data-boundary"
+          ],
+          "total_ms": 0.214,
+          "mode_used": "bm25",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-019",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.3333333333333333,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-OPERATION-005#ambiguous-request",
+            "KB-OPERATION-005#status-query-readonly",
+            "KB-REFUND-007#refund-with-reissue"
+          ],
+          "total_ms": 0.149,
+          "mode_used": "bm25",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-020",
+          "answerability": "answerable",
+          "recall_at_3": 0.5,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.3333333333333333,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-OPERATION-005#ai-no-completion-claim",
+            "KB-OPERATION-005#status-query-readonly",
+            "KB-BENEFIT-003#ineligible-no-auto-reissue"
+          ],
+          "total_ms": 0.209,
+          "mode_used": "bm25",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-021",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.6666666666666666,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-REFUND-007#refund-tier2",
+            "KB-MEMBER-001#cancel-current-entitlement",
+            "KB-REFUND-007#refund-identity"
+          ],
+          "total_ms": 0.171,
+          "mode_used": "bm25",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-022",
+          "answerability": "answerable",
+          "recall_at_3": 0.5,
+          "reciprocal_rank": 0.3333333333333333,
+          "precision_at_3": 0.3333333333333333,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-MEMBER-001#cancel-next-charge",
+            "KB-MEMBER-001#cancel-current-entitlement",
+            "KB-REFUND-007#post-cancellation-charge"
+          ],
+          "total_ms": 0.197,
+          "mode_used": "bm25",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-023",
+          "answerability": "answerable",
+          "recall_at_3": 0.5,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.6666666666666666,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-REFUND-007#refund-identity",
+            "KB-OPERATION-005#ambiguous-request",
+            "KB-MEMBER-001#cancel-not-refund"
+          ],
+          "total_ms": 0.155,
+          "mode_used": "bm25",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-024",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.6666666666666666,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-REFUND-007#refund-with-reissue",
+            "KB-OPERATION-005#write-action-tier1",
+            "KB-BENEFIT-003#coupon-delivery-window"
+          ],
+          "total_ms": 0.194,
+          "mode_used": "bm25",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-025",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.3333333333333333,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-SECURITY-008#report-tier2",
+            "KB-SECURITY-008#legal-safety",
+            "KB-REFUND-007#refund-identity"
+          ],
+          "total_ms": 0.121,
+          "mode_used": "bm25",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-026",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.3333333333333333,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-SECURITY-008#account-security",
+            "KB-MEMBER-001#cancel-not-refund",
+            "KB-OPERATION-005#ambiguous-request"
+          ],
+          "total_ms": 0.217,
+          "mode_used": "bm25",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-027",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.3333333333333333,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-SECURITY-008#legal-safety",
+            "KB-SECURITY-008#account-security",
+            "KB-MEMBER-002#general-benefit-query"
+          ],
+          "total_ms": 0.173,
+          "mode_used": "bm25",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-028",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.6666666666666666,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-ACCOUNT-009#profile-change",
+            "KB-ACCOUNT-009#unverified-profile",
+            "KB-MEMBER-002#membership-status-identity"
+          ],
+          "total_ms": 0.178,
+          "mode_used": "bm25",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-029",
+          "answerability": "unanswerable",
+          "recall_at_3": null,
+          "reciprocal_rank": null,
+          "precision_at_3": 0,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-OPERATION-005#write-action-tier1",
+            "KB-BENEFIT-003#coupon-status-data",
+            "KB-BENEFIT-003#coupon-delivery-window"
+          ],
+          "total_ms": 0.152,
+          "mode_used": "bm25",
+          "status": "insufficient",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-030",
+          "answerability": "unanswerable",
+          "recall_at_3": null,
+          "reciprocal_rank": null,
+          "precision_at_3": 0,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-ACCOUNT-009#unverified-profile",
+            "KB-ACCOUNT-009#personal-data-boundary",
+            "KB-BENEFIT-003#coupon-status-data"
+          ],
+          "total_ms": 0.175,
+          "mode_used": "bm25",
+          "status": "insufficient",
+          "warning": null
+        }
+      ]
+    },
+    {
+      "mode": "vector",
+      "case_count": 30,
+      "answerable_case_count": 28,
+      "recall_at_3": 0.9107142857142857,
+      "mrr": 0.875,
+      "precision_at_3": 0.46666666666666673,
+      "answerability_accuracy": 0.9666666666666667,
+      "average_total_ms": 16.6228,
+      "total_latency_ms": {
+        "p50": 16.599,
+        "p95": 16.761
+      },
+      "embedding_latency_ms": {
+        "p50": 16.452,
+        "p95": 16.452
+      },
+      "cases": [
+        {
+          "eval_id": "RAG-001",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 0.5,
+          "precision_at_3": 0.3333333333333333,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-MEMBER-001#unsubscribe-human-action",
+            "KB-MEMBER-001#cancel-current-entitlement",
+            "KB-MEMBER-002#membership-status-identity"
+          ],
+          "total_ms": 17.242,
+          "mode_used": "vector",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-002",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.6666666666666666,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-MEMBER-001#cancel-next-charge",
+            "KB-REFUND-007#post-cancellation-charge",
+            "KB-MEMBER-001#cancel-current-entitlement"
+          ],
+          "total_ms": 16.761,
+          "mode_used": "vector",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-003",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.3333333333333333,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-MEMBER-001#unsubscribe-human-action",
+            "KB-MEMBER-001#cancel-next-charge",
+            "KB-REFUND-007#post-cancellation-charge"
+          ],
+          "total_ms": 16.583,
+          "mode_used": "vector",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-004",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.6666666666666666,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-MEMBER-001#cancel-not-refund",
+            "KB-MEMBER-001#unsubscribe-human-action",
+            "KB-OPERATION-005#ambiguous-request"
+          ],
+          "total_ms": 16.57,
+          "mode_used": "vector",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-005",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.3333333333333333,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-MEMBER-002#membership-expiry-query",
+            "KB-MEMBER-001#cancel-current-entitlement",
+            "KB-BENEFIT-003#coupon-delivery-window"
+          ],
+          "total_ms": 16.57,
+          "mode_used": "vector",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-006",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.3333333333333333,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-MEMBER-002#membership-status-identity",
+            "KB-MEMBER-001#cancel-next-charge",
+            "KB-SECURITY-008#account-security"
+          ],
+          "total_ms": 16.587,
+          "mode_used": "vector",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-007",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.3333333333333333,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-MEMBER-002#general-benefit-query",
+            "KB-MEMBER-001#cancel-current-entitlement",
+            "KB-MEMBER-002#membership-expiry-query"
+          ],
+          "total_ms": 16.557,
+          "mode_used": "vector",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-008",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.6666666666666666,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-BENEFIT-003#eligible-products-current",
+            "KB-BENEFIT-003#ineligible-no-auto-reissue",
+            "KB-MEMBER-002#general-benefit-query"
+          ],
+          "total_ms": 16.556,
+          "mode_used": "vector",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-009",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.6666666666666666,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-BENEFIT-003#coupon-delivery-window",
+            "KB-BENEFIT-003#eligible-products-current",
+            "KB-REFUND-007#refund-with-reissue"
+          ],
+          "total_ms": 16.555,
+          "mode_used": "vector",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-010",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 0.5,
+          "precision_at_3": 0.6666666666666666,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-BENEFIT-003#coupon-delivery-window",
+            "KB-BENEFIT-003#coupon-status-data",
+            "KB-MEMBER-002#membership-status-identity"
+          ],
+          "total_ms": 16.66,
+          "mode_used": "vector",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-011",
+          "answerability": "answerable",
+          "recall_at_3": 0.5,
+          "reciprocal_rank": 0.5,
+          "precision_at_3": 0.3333333333333333,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-BENEFIT-003#coupon-delivery-window",
+            "KB-BENEFIT-003#ineligible-no-auto-reissue",
+            "KB-REFUND-007#refund-with-reissue"
+          ],
+          "total_ms": 16.609,
+          "mode_used": "vector",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-012",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.6666666666666666,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-BENEFIT-004#qualification-dispute-review",
+            "KB-BENEFIT-004#compensation-missing-information",
+            "KB-BENEFIT-003#ineligible-no-auto-reissue"
+          ],
+          "total_ms": 16.605,
+          "mode_used": "vector",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-013",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.6666666666666666,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-BENEFIT-004#noncash-compensation",
+            "KB-BENEFIT-004#qualification-dispute-review",
+            "KB-REFUND-007#refund-with-reissue"
+          ],
+          "total_ms": 16.661,
+          "mode_used": "vector",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-014",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 0.5,
+          "precision_at_3": 0.6666666666666666,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-COMPLAINT-006#department-routing",
+            "KB-COMPLAINT-006#complaint-registration",
+            "KB-BENEFIT-003#ineligible-no-auto-reissue"
+          ],
+          "total_ms": 16.625,
+          "mode_used": "vector",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-015",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.3333333333333333,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-COMPLAINT-006#department-routing",
+            "KB-BENEFIT-004#qualification-dispute-review",
+            "KB-BENEFIT-004#compensation-missing-information"
+          ],
+          "total_ms": 16.597,
+          "mode_used": "vector",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-016",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.6666666666666666,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-COMPLAINT-006#suggestion-notification",
+            "KB-COMPLAINT-006#department-routing",
+            "KB-MEMBER-002#membership-expiry-query"
+          ],
+          "total_ms": 16.604,
+          "mode_used": "vector",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-017",
+          "answerability": "answerable",
+          "recall_at_3": 0,
+          "reciprocal_rank": 0,
+          "precision_at_3": 0,
+          "answerability_correct": false,
+          "retrieved_chunk_ids": [
+            "KB-BENEFIT-003#coupon-delivery-window",
+            "KB-BENEFIT-003#ineligible-no-auto-reissue",
+            "KB-REFUND-007#refund-with-reissue"
+          ],
+          "total_ms": 16.599,
+          "mode_used": "vector",
+          "status": "insufficient",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-018",
+          "answerability": "answerable",
+          "recall_at_3": 0.5,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.3333333333333333,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-ACCOUNT-009#profile-change",
+            "KB-ACCOUNT-009#unverified-profile",
+            "KB-MEMBER-001#unsubscribe-human-action"
+          ],
+          "total_ms": 16.576,
+          "mode_used": "vector",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-019",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.3333333333333333,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-OPERATION-005#ambiguous-request",
+            "KB-MEMBER-001#unsubscribe-human-action",
+            "KB-MEMBER-001#cancel-next-charge"
+          ],
+          "total_ms": 16.563,
+          "mode_used": "vector",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-020",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.6666666666666666,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-OPERATION-005#ai-no-completion-claim",
+            "KB-OPERATION-005#write-action-tier1",
+            "KB-MEMBER-001#unsubscribe-human-action"
+          ],
+          "total_ms": 16.599,
+          "mode_used": "vector",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-021",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.3333333333333333,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-REFUND-007#refund-tier2",
+            "KB-REFUND-007#post-cancellation-charge",
+            "KB-MEMBER-001#cancel-next-charge"
+          ],
+          "total_ms": 16.624,
+          "mode_used": "vector",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-022",
+          "answerability": "answerable",
+          "recall_at_3": 0.5,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.3333333333333333,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-REFUND-007#post-cancellation-charge",
+            "KB-MEMBER-001#cancel-next-charge",
+            "KB-MEMBER-001#unsubscribe-human-action"
+          ],
+          "total_ms": 16.599,
+          "mode_used": "vector",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-023",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 0.5,
+          "precision_at_3": 1,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-OPERATION-005#ambiguous-request",
+            "KB-REFUND-007#refund-identity",
+            "KB-REFUND-007#refund-tier2"
+          ],
+          "total_ms": 16.618,
+          "mode_used": "vector",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-024",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.6666666666666666,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-REFUND-007#refund-with-reissue",
+            "KB-REFUND-007#refund-tier2",
+            "KB-BENEFIT-003#ineligible-no-auto-reissue"
+          ],
+          "total_ms": 16.601,
+          "mode_used": "vector",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-025",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.3333333333333333,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-SECURITY-008#report-tier2",
+            "KB-SECURITY-008#account-security",
+            "KB-COMPLAINT-006#complaint-registration"
+          ],
+          "total_ms": 16.592,
+          "mode_used": "vector",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-026",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.6666666666666666,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-SECURITY-008#account-security",
+            "KB-REFUND-007#refund-identity",
+            "KB-ACCOUNT-009#unverified-profile"
+          ],
+          "total_ms": 16.601,
+          "mode_used": "vector",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-027",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.3333333333333333,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-SECURITY-008#legal-safety",
+            "KB-SECURITY-008#account-security",
+            "KB-COMPLAINT-006#complaint-registration"
+          ],
+          "total_ms": 16.601,
+          "mode_used": "vector",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-028",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.6666666666666666,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-ACCOUNT-009#profile-change",
+            "KB-ACCOUNT-009#unverified-profile",
+            "KB-MEMBER-002#membership-status-identity"
+          ],
+          "total_ms": 16.591,
+          "mode_used": "vector",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-029",
+          "answerability": "unanswerable",
+          "recall_at_3": null,
+          "reciprocal_rank": null,
+          "precision_at_3": 0,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-BENEFIT-003#coupon-delivery-window",
+            "KB-BENEFIT-003#eligible-products-current",
+            "KB-REFUND-007#refund-with-reissue"
+          ],
+          "total_ms": 16.588,
+          "mode_used": "vector",
+          "status": "insufficient",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-030",
+          "answerability": "unanswerable",
+          "recall_at_3": null,
+          "reciprocal_rank": null,
+          "precision_at_3": 0,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-ACCOUNT-009#profile-change",
+            "KB-MEMBER-002#membership-status-identity",
+            "KB-SECURITY-008#account-security"
+          ],
+          "total_ms": 16.59,
+          "mode_used": "vector",
+          "status": "insufficient",
+          "warning": null
+        }
+      ]
+    },
+    {
+      "mode": "hybrid",
+      "case_count": 30,
+      "answerable_case_count": 28,
+      "recall_at_3": 0.9285714285714286,
+      "mrr": 0.9047619047619049,
+      "precision_at_3": 0.46666666666666673,
+      "answerability_accuracy": 1,
+      "average_total_ms": 16.791299999999996,
+      "total_latency_ms": {
+        "p50": 16.763,
+        "p95": 16.92
+      },
+      "embedding_latency_ms": {
+        "p50": 16.452,
+        "p95": 16.452
+      },
+      "cases": [
+        {
+          "eval_id": "RAG-001",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 0.5,
+          "precision_at_3": 0.3333333333333333,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-MEMBER-001#unsubscribe-human-action",
+            "KB-MEMBER-001#cancel-current-entitlement",
+            "KB-BENEFIT-003#eligible-products-current"
+          ],
+          "total_ms": 17.175,
+          "mode_used": "hybrid",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-002",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.6666666666666666,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-MEMBER-001#cancel-next-charge",
+            "KB-MEMBER-001#cancel-current-entitlement",
+            "KB-REFUND-007#post-cancellation-charge"
+          ],
+          "total_ms": 16.882,
+          "mode_used": "hybrid",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-003",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.3333333333333333,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-MEMBER-001#unsubscribe-human-action",
+            "KB-MEMBER-001#cancel-current-entitlement",
+            "KB-REFUND-007#post-cancellation-charge"
+          ],
+          "total_ms": 16.822,
+          "mode_used": "hybrid",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-004",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.6666666666666666,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-MEMBER-001#cancel-not-refund",
+            "KB-MEMBER-001#unsubscribe-human-action",
+            "KB-OPERATION-005#ambiguous-request"
+          ],
+          "total_ms": 16.873,
+          "mode_used": "hybrid",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-005",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.3333333333333333,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-MEMBER-002#membership-expiry-query",
+            "KB-MEMBER-001#cancel-current-entitlement",
+            "KB-BENEFIT-003#coupon-delivery-window"
+          ],
+          "total_ms": 16.785,
+          "mode_used": "hybrid",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-006",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.6666666666666666,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-MEMBER-002#membership-status-identity",
+            "KB-MEMBER-001#cancel-next-charge",
+            "KB-ACCOUNT-009#unverified-profile"
+          ],
+          "total_ms": 16.92,
+          "mode_used": "hybrid",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-007",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 0.5,
+          "precision_at_3": 0.3333333333333333,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-MEMBER-001#cancel-current-entitlement",
+            "KB-MEMBER-002#general-benefit-query",
+            "KB-MEMBER-002#membership-expiry-query"
+          ],
+          "total_ms": 16.795,
+          "mode_used": "hybrid",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-008",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.6666666666666666,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-BENEFIT-003#eligible-products-current",
+            "KB-BENEFIT-003#ineligible-no-auto-reissue",
+            "KB-REFUND-007#refund-with-reissue"
+          ],
+          "total_ms": 16.866,
+          "mode_used": "hybrid",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-009",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.3333333333333333,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-BENEFIT-003#coupon-delivery-window",
+            "KB-BENEFIT-003#ineligible-no-auto-reissue",
+            "KB-REFUND-007#refund-with-reissue"
+          ],
+          "total_ms": 16.815,
+          "mode_used": "hybrid",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-010",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.6666666666666666,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-BENEFIT-003#coupon-status-data",
+            "KB-BENEFIT-003#coupon-delivery-window",
+            "KB-OPERATION-005#write-action-tier1"
+          ],
+          "total_ms": 16.854,
+          "mode_used": "hybrid",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-011",
+          "answerability": "answerable",
+          "recall_at_3": 0.5,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.6666666666666666,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-BENEFIT-003#ineligible-no-auto-reissue",
+            "KB-BENEFIT-003#eligible-products-current",
+            "KB-MEMBER-001#cancel-next-charge"
+          ],
+          "total_ms": 16.754,
+          "mode_used": "hybrid",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-012",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.6666666666666666,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-BENEFIT-004#qualification-dispute-review",
+            "KB-BENEFIT-004#compensation-missing-information",
+            "KB-BENEFIT-003#ineligible-no-auto-reissue"
+          ],
+          "total_ms": 16.816,
+          "mode_used": "hybrid",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-013",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 0.5,
+          "precision_at_3": 0.3333333333333333,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-BENEFIT-004#compensation-missing-information",
+            "KB-BENEFIT-004#noncash-compensation",
+            "KB-REFUND-007#refund-with-reissue"
+          ],
+          "total_ms": 16.815,
+          "mode_used": "hybrid",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-014",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.6666666666666666,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-COMPLAINT-006#complaint-registration",
+            "KB-COMPLAINT-006#department-routing",
+            "KB-BENEFIT-003#coupon-status-data"
+          ],
+          "total_ms": 16.733,
+          "mode_used": "hybrid",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-015",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.3333333333333333,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-COMPLAINT-006#department-routing",
+            "KB-BENEFIT-004#qualification-dispute-review",
+            "KB-BENEFIT-004#compensation-missing-information"
+          ],
+          "total_ms": 16.786,
+          "mode_used": "hybrid",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-016",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.6666666666666666,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-COMPLAINT-006#suggestion-notification",
+            "KB-COMPLAINT-006#department-routing",
+            "KB-MEMBER-002#membership-expiry-query"
+          ],
+          "total_ms": 16.772,
+          "mode_used": "hybrid",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-017",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 0.3333333333333333,
+          "precision_at_3": 0.3333333333333333,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-BENEFIT-003#coupon-delivery-window",
+            "KB-REFUND-007#refund-with-reissue",
+            "KB-OPERATION-005#status-query-readonly"
+          ],
+          "total_ms": 16.737,
+          "mode_used": "hybrid",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-018",
+          "answerability": "answerable",
+          "recall_at_3": 0.5,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.3333333333333333,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-ACCOUNT-009#profile-change",
+            "KB-MEMBER-001#unsubscribe-human-action",
+            "KB-ACCOUNT-009#unverified-profile"
+          ],
+          "total_ms": 16.72,
+          "mode_used": "hybrid",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-019",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.3333333333333333,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-OPERATION-005#ambiguous-request",
+            "KB-MEMBER-001#unsubscribe-human-action",
+            "KB-MEMBER-001#cancel-next-charge"
+          ],
+          "total_ms": 16.712,
+          "mode_used": "hybrid",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-020",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.6666666666666666,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-OPERATION-005#ai-no-completion-claim",
+            "KB-OPERATION-005#write-action-tier1",
+            "KB-MEMBER-001#cancel-not-refund"
+          ],
+          "total_ms": 16.763,
+          "mode_used": "hybrid",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-021",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.3333333333333333,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-REFUND-007#refund-tier2",
+            "KB-MEMBER-001#cancel-next-charge",
+            "KB-REFUND-007#post-cancellation-charge"
+          ],
+          "total_ms": 16.714,
+          "mode_used": "hybrid",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-022",
+          "answerability": "answerable",
+          "recall_at_3": 0.5,
+          "reciprocal_rank": 0.5,
+          "precision_at_3": 0.3333333333333333,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-MEMBER-001#cancel-next-charge",
+            "KB-REFUND-007#post-cancellation-charge",
+            "KB-MEMBER-001#cancel-current-entitlement"
+          ],
+          "total_ms": 16.75,
+          "mode_used": "hybrid",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-023",
+          "answerability": "answerable",
+          "recall_at_3": 0.5,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.6666666666666666,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-REFUND-007#refund-identity",
+            "KB-OPERATION-005#ambiguous-request",
+            "KB-MEMBER-001#cancel-not-refund"
+          ],
+          "total_ms": 16.714,
+          "mode_used": "hybrid",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-024",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.6666666666666666,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-REFUND-007#refund-with-reissue",
+            "KB-REFUND-007#refund-tier2",
+            "KB-BENEFIT-003#ineligible-no-auto-reissue"
+          ],
+          "total_ms": 16.742,
+          "mode_used": "hybrid",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-025",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.3333333333333333,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-SECURITY-008#report-tier2",
+            "KB-SECURITY-008#account-security",
+            "KB-COMPLAINT-006#complaint-registration"
+          ],
+          "total_ms": 16.688,
+          "mode_used": "hybrid",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-026",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.6666666666666666,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-SECURITY-008#account-security",
+            "KB-REFUND-007#post-cancellation-charge",
+            "KB-REFUND-007#refund-identity"
+          ],
+          "total_ms": 16.768,
+          "mode_used": "hybrid",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-027",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.3333333333333333,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-SECURITY-008#legal-safety",
+            "KB-SECURITY-008#account-security",
+            "KB-MEMBER-002#membership-status-identity"
+          ],
+          "total_ms": 16.753,
+          "mode_used": "hybrid",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-028",
+          "answerability": "answerable",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "precision_at_3": 0.6666666666666666,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-ACCOUNT-009#profile-change",
+            "KB-ACCOUNT-009#unverified-profile",
+            "KB-MEMBER-002#membership-status-identity"
+          ],
+          "total_ms": 16.758,
+          "mode_used": "hybrid",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-029",
+          "answerability": "unanswerable",
+          "recall_at_3": null,
+          "reciprocal_rank": null,
+          "precision_at_3": 0,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-BENEFIT-003#coupon-delivery-window",
+            "KB-BENEFIT-003#eligible-products-current",
+            "KB-OPERATION-005#write-action-tier1"
+          ],
+          "total_ms": 16.713,
+          "mode_used": "hybrid",
+          "status": "insufficient",
+          "warning": null
+        },
+        {
+          "eval_id": "RAG-030",
+          "answerability": "unanswerable",
+          "recall_at_3": null,
+          "reciprocal_rank": null,
+          "precision_at_3": 0,
+          "answerability_correct": true,
+          "retrieved_chunk_ids": [
+            "KB-ACCOUNT-009#profile-change",
+            "KB-ACCOUNT-009#unverified-profile",
+            "KB-MEMBER-002#general-benefit-query"
+          ],
+          "total_ms": 16.744,
+          "mode_used": "hybrid",
+          "status": "insufficient",
+          "warning": null
+        }
+      ]
+    }
+  ]
+}

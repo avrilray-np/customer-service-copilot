@@ -8,9 +8,13 @@ const selection = vi.hoisted(() => ({
   model: "deepseek-test" as string | null,
   provider,
 }));
+const rag = vi.hoisted(() => ({ prepare: vi.fn() }));
 
 vi.mock("@/ai/provider-factory", () => ({
   createProviderSelection: () => selection,
+}));
+vi.mock("@/rag/demo-rag-pipeline", () => ({
+  prepareRagAnalysis: rag.prepare,
 }));
 
 import { POST } from "@/app/api/ai/analyze/route";
@@ -19,6 +23,15 @@ beforeEach(() => {
   provider.analyze.mockReset();
   selection.mode = "deepseek";
   selection.model = "deepseek-test";
+  rag.prepare.mockImplementation(async (input) => ({
+    input: {
+      ...input,
+      knowledge_sources: [{ chunk_id: "KB-MEMBER-001#cancel-current-entitlement", document_id: "KB-MEMBER-001", title: "会员自动续订与退订规则", section: "取消自动续订 / 当前周期权益", version: "2026.09", quote: "取消自动续订不影响当前权益。" }],
+      retrieval_status: "available",
+      knowledge_base_version: "kb-test",
+    },
+    trace: { mode_requested: "hybrid", mode_used: "hybrid", retrieval_status: "available", knowledge_base_version: "kb-test", embedding_model: "test", filtered_count: 0, timings_ms: { metadata_filter: 0, lexical: 0, embedding: 0, vector: 0, fusion: 0, total: 0 }, warning: null, hits: [] },
+  }));
 });
 
 function request(body: unknown) {
@@ -40,6 +53,7 @@ describe("POST /api/ai/analyze", () => {
       expect(response.status).toBe(200);
       expect(body.mode).toBe("deepseek");
       expect(body.model).toBe("deepseek-test");
+      expect(body.retrieval_trace.mode_used).toBe("hybrid");
     }
 
     expect(provider.analyze).toHaveBeenCalledTimes(4);

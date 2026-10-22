@@ -8,15 +8,7 @@ export const caseTwoInput: AiAnalysisInput = {
     subscription_product_type: "ordinary_monthly_card",
     coupon_delivery_status: "not_generated",
   },
-  knowledge_sources: [
-    {
-      document_id: "KB-BENEFIT-003",
-      title: "会员活动资格与争议补偿规则",
-      section: "活动资格与人工争议补偿",
-      version: "2026.09",
-      quote: "原活动仅面向连续包月产品；资格提示存在明确争议时，可由一线人工审核一次性非现金权益补偿。",
-    },
-  ],
+  knowledge_sources: [],
   user_data_sources: [
     {
       source: "demo_benefit_service",
@@ -24,9 +16,24 @@ export const caseTwoInput: AiAnalysisInput = {
       queried_at: "2026-09-01T10:15:08+08:00",
     },
   ],
+  retrieval_context: {
+    query_time: "2026-10-21T10:15:08+08:00",
+    audience: "ai",
+    known_product_type: "ordinary_monthly_card",
+  },
 };
 
 export const caseTwoFollowUp = "帮我补发优惠券，我还要投诉活动规则不清楚。";
+
+export const caseTwoFollowUpInput: AiAnalysisInput = {
+  ...caseTwoInput,
+  message: `${caseTwoInput.message}\n用户追加诉求：${caseTwoFollowUp}`,
+  retrieval_context: {
+    ...caseTwoInput.retrieval_context!,
+    audience: "tier1",
+    query_hint: "活动资格提示 争议补偿 人工审核 投诉登记",
+  },
+};
 
 export const caseTwoEscalatedCandidate: AiAnalysisCandidate = {
   summary: "用户购买普通月卡后未收到50元活动优惠券，在获知不符合原活动资格后，明确要求补发并投诉活动资格提示不清。",

@@ -1,0 +1,70 @@
+[
+  {
+    "chunk_id": "KB-ACCOUNT-009#profile-change",
+    "document_id": "KB-ACCOUNT-009",
+    "section_path": [
+      "账户资料",
+      "手机号等资料修改"
+    ],
+    "text": "修改会员绑定手机号等账户资料属于业务写操作，必须由一线在身份核验通过后处理，AI不得直接修改。",
+    "keywords": [
+      "修改手机号",
+      "绑定手机",
+      "账户资料",
+      "身份核验"
+    ],
+    "issue_subtypes": [
+      "general_operation"
+    ],
+    "rule_key": "account.profile.change",
+    "decision_value": "verified_tier1_action",
+    "priority": 100,
+    "checksum": "sha256:e4d7c0cad09cace711354680d2f8ccbd9279622dcb7e8319d2903b63ce572d52"
+  },
+  {
+    "chunk_id": "KB-ACCOUNT-009#unverified-profile",
+    "document_id": "KB-ACCOUNT-009",
+    "section_path": [
+      "身份核验",
+      "未通过"
+    ],
+    "text": "账户资料修改或个人状态查询时身份未验证，应停止披露或修改并转一线完成人工身份核验。",
+    "keywords": [
+      "身份未验证",
+      "不能修改",
+      "不能披露",
+      "人工核验"
+    ],
+    "issue_subtypes": [
+      "general_operation",
+      "membership_query"
+    ],
+    "rule_key": "account.identity.unverified",
+    "decision_value": "block_and_tier1_verify",
+    "priority": 100,
+    "checksum": "sha256:071fa7f36987a55d5730c0f5368eb843a54121162a07b0e161b35f4193047fc9"
+  },
+  {
+    "chunk_id": "KB-ACCOUNT-009#personal-data-boundary",
+    "document_id": "KB-ACCOUNT-009",
+    "section_path": [
+      "数据边界",
+      "知识与用户记录"
+    ],
+    "text": "知识库只保存通用业务规则，不保存UID、订单号、交易号或某个用户的会员与订购状态。个人事实必须通过受控用户数据源单独查询。",
+    "keywords": [
+      "用户数据",
+      "知识库边界",
+      "UID",
+      "订单号",
+      "个人事实"
+    ],
+    "issue_subtypes": [
+      "policy_query"
+    ],
+    "rule_key": "account.data.knowledge_boundary",
+    "decision_value": "separate_user_facts",
+    "priority": 90,
+    "checksum": "sha256:5b592070f9c4fa100f384a14a53161692b54c03d5d6c68d9445bd403276a4ec7"
+  }
+]

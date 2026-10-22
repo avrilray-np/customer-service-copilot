@@ -1,0 +1,94 @@
+[
+  {
+    "chunk_id": "KB-BENEFIT-003#eligible-products-current",
+    "document_id": "KB-BENEFIT-003",
+    "section_path": [
+      "活动资格",
+      "适用产品"
+    ],
+    "text": "当前50元赠券活动仅面向活动期内新开通连续包月的用户。普通月卡不属于原活动适用产品，不具备原活动赠券资格。",
+    "keywords": [
+      "50元优惠券",
+      "连续包月",
+      "普通月卡",
+      "活动资格"
+    ],
+    "issue_subtypes": [
+      "policy_query",
+      "operation_status_query"
+    ],
+    "rule_key": "benefit.campaign.eligible_products",
+    "decision_value": "continuous_monthly_only",
+    "priority": 100,
+    "checksum": "sha256:cd113e87b58cce0ce59328d93841294fd8eb462840f265bf2f5614a889f03967"
+  },
+  {
+    "chunk_id": "KB-BENEFIT-003#coupon-delivery-window",
+    "document_id": "KB-BENEFIT-003",
+    "section_path": [
+      "优惠券发放",
+      "到账时间"
+    ],
+    "text": "符合活动资格的订单完成支付后，优惠券将在活动页面公示的发放周期内进入用户券包。未超过发放周期时应说明预计时间，不得声称补发完成。",
+    "keywords": [
+      "优惠券什么时候到账",
+      "发放时间",
+      "券包",
+      "未到账"
+    ],
+    "issue_subtypes": [
+      "operation_status_query",
+      "policy_query"
+    ],
+    "rule_key": "benefit.campaign.delivery_window",
+    "decision_value": "deliver_within_published_window",
+    "priority": 90,
+    "checksum": "sha256:6af4ad379f8bb16624b5dcee6a865d3540fac6f27c92a7aa3d9b8e228d284132"
+  },
+  {
+    "chunk_id": "KB-BENEFIT-003#coupon-status-data",
+    "document_id": "KB-BENEFIT-003",
+    "section_path": [
+      "优惠券发放",
+      "个人记录查询"
+    ],
+    "text": "判断某位用户的优惠券是否已生成、已发放或已领取，必须查询该用户的订单、产品类型和发券记录，不能仅凭活动规则推断。",
+    "keywords": [
+      "优惠券没到账",
+      "发券记录",
+      "订单查询",
+      "领取状态"
+    ],
+    "issue_subtypes": [
+      "operation_status_query"
+    ],
+    "rule_key": "benefit.campaign.delivery_status",
+    "decision_value": "user_record_required",
+    "priority": 95,
+    "checksum": "sha256:8807f71e026e2418117f7695def33f569816e5f720f1431031c4909045e387ed"
+  },
+  {
+    "chunk_id": "KB-BENEFIT-003#ineligible-no-auto-reissue",
+    "document_id": "KB-BENEFIT-003",
+    "section_path": [
+      "活动资格",
+      "不符合资格"
+    ],
+    "text": "不符合原活动产品条件时，系统不得把优惠券未到账直接认定为漏发，也不得由AI自动补发。存在页面提示争议时可转一线按争议规则审核。",
+    "keywords": [
+      "不符合资格",
+      "不能自动补发",
+      "普通月卡",
+      "提示争议"
+    ],
+    "issue_subtypes": [
+      "reissue",
+      "complaint",
+      "operation_status_query"
+    ],
+    "rule_key": "benefit.campaign.ineligible_action",
+    "decision_value": "no_automatic_reissue",
+    "priority": 100,
+    "checksum": "sha256:25c18a8b0ab66e7b840dcf362b147de1936cb69a9263837c72c3733765b9d87c"
+  }
+]

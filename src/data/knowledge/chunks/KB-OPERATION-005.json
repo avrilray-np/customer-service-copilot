@@ -1,0 +1,98 @@
+[
+  {
+    "chunk_id": "KB-OPERATION-005#status-query-readonly",
+    "document_id": "KB-OPERATION-005",
+    "section_path": [
+      "状态查询",
+      "只读处理"
+    ],
+    "text": "查询退订、补发或其他历史申请是否处理完成属于只读状态查询。完成身份核验并取得业务记录后，AI可以说明当前状态，但不能把查询理解为新的操作请求。",
+    "keywords": [
+      "上次申请处理了吗",
+      "补发进度",
+      "退订状态",
+      "历史操作结果"
+    ],
+    "issue_subtypes": [
+      "operation_status_query"
+    ],
+    "rule_key": "operation.status.readonly",
+    "decision_value": "reply_from_verified_record",
+    "priority": 95,
+    "checksum": "sha256:9c4b9320120c1300bc3c6912eb7614d96e8fd64a285cbfdb6b1bc4cbd19f3422"
+  },
+  {
+    "chunk_id": "KB-OPERATION-005#write-action-tier1",
+    "document_id": "KB-OPERATION-005",
+    "section_path": [
+      "业务写操作",
+      "一线处理"
+    ],
+    "text": "退订、优惠券补发和账户资料修改会改变业务状态，必须由一线客服确认后模拟执行。AI可以生成摘要、建议回复和操作指引，但不得自动执行。",
+    "keywords": [
+      "业务写操作",
+      "退订",
+      "补发优惠券",
+      "资料修改",
+      "一线客服"
+    ],
+    "issue_subtypes": [
+      "unsubscribe",
+      "reissue",
+      "general_operation"
+    ],
+    "rule_key": "operation.write.tier1",
+    "decision_value": "tier1_execution_required",
+    "priority": 100,
+    "checksum": "sha256:36e1639227ae5ab1f3f7e5066f0045db696d7e01f40d56cbb34f23fee90d0c25"
+  },
+  {
+    "chunk_id": "KB-OPERATION-005#ambiguous-request",
+    "document_id": "KB-OPERATION-005",
+    "section_path": [
+      "诉求不明确",
+      "澄清"
+    ],
+    "text": "用户只说不想用了或处理一下，无法确定是取消续费、退款还是其他操作时，应追问或转一线澄清，不得自行选择业务动作。",
+    "keywords": [
+      "我不想用了",
+      "处理一下",
+      "诉求含糊",
+      "需要澄清"
+    ],
+    "issue_subtypes": [
+      "general_operation",
+      "unsubscribe",
+      "refund"
+    ],
+    "rule_key": "operation.ambiguous.clarification",
+    "decision_value": "clarification_required",
+    "priority": 90,
+    "checksum": "sha256:dbe991a2eaef3b0b9df17fc1196cd96c726bf5a05822f601bfdf211b92a631df"
+  },
+  {
+    "chunk_id": "KB-OPERATION-005#ai-no-completion-claim",
+    "document_id": "KB-OPERATION-005",
+    "section_path": [
+      "AI边界",
+      "完成声明"
+    ],
+    "text": "未经人工操作结果确认，AI不得声称已经完成退订、补发、退款、封禁或资料修改。可以表述诉求已记录、尚待审核或将转人工处理。",
+    "keywords": [
+      "不得承诺完成",
+      "诉求已记录",
+      "尚待审核",
+      "转人工"
+    ],
+    "issue_subtypes": [
+      "unsubscribe",
+      "reissue",
+      "refund",
+      "general_operation"
+    ],
+    "rule_key": "operation.ai.completion_claim",
+    "decision_value": "confirmed_result_required",
+    "priority": 100,
+    "checksum": "sha256:5c340f94de493c059ea7910e8a3d44f5fb6bdcc2e0e95267da3ef5cce7cddd23"
+  }
+]

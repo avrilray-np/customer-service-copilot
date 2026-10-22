@@ -6,13 +6,26 @@ import type {
   RiskLevel,
   UserDataSource,
 } from "@/domain/ticket/types";
+import type { KnowledgeAudience, RetrievalStatus } from "@/rag/types";
+
+export interface RetrievedKnowledgeSource extends KnowledgeSource {
+  chunk_id: string;
+}
 
 export interface AiAnalysisInput {
   message: string;
   identity_status: "verified" | "unverified" | "not_required";
   user_facts: Record<string, string | number | boolean | null>;
-  knowledge_sources: KnowledgeSource[];
+  knowledge_sources: RetrievedKnowledgeSource[];
   user_data_sources: UserDataSource[];
+  retrieval_status?: RetrievalStatus;
+  knowledge_base_version?: string;
+  retrieval_context?: {
+    query_time: string;
+    audience: KnowledgeAudience;
+    known_product_type: string | null;
+    query_hint?: string;
+  };
 }
 
 export type AiMode = "mock" | "gemini" | "deepseek";

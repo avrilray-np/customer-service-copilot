@@ -3,6 +3,7 @@ import type { Ticket } from "./types";
 
 interface TicketCreationOptions {
   promptVersion?: string;
+  knowledgeBaseVersion?: string;
 }
 
 export function createWaitingTicket(candidate: AiAnalysisCandidate, options: TicketCreationOptions = {}): Ticket {
@@ -53,7 +54,7 @@ export function createWaitingTicket(candidate: AiAnalysisCandidate, options: Tic
     },
     audit: {
       prompt_version: options.promptVersion ?? "customer-service-v1.0",
-      knowledge_base_version: "kb-2026.08",
+      knowledge_base_version: options.knowledgeBaseVersion ?? "kb-2026.08",
       human_edit_record: null,
     },
   };
@@ -100,7 +101,7 @@ export function createCaseTwoWaitingTicket(candidate: AiAnalysisCandidate, optio
       department_notification_status: "not_required",
     },
     resolution: { action_result: null, summary: null, closed_by: null, closed_at: null },
-    audit: { prompt_version: options.promptVersion ?? "customer-service-v1.0", knowledge_base_version: "kb-2026.09", human_edit_record: null },
+    audit: { prompt_version: options.promptVersion ?? "customer-service-v1.0", knowledge_base_version: options.knowledgeBaseVersion ?? "kb-2026.09", human_edit_record: null },
   };
 }
 
@@ -145,6 +146,6 @@ export function createCaseThreeTicket(candidate: AiAnalysisCandidate, options: T
       department_notification_status: "not_required",
     },
     resolution: { action_result: null, summary: null, closed_by: null, closed_at: null },
-    audit: { prompt_version: options.promptVersion ?? "customer-service-v1.0", knowledge_base_version: "kb-2026.09", human_edit_record: null },
+    audit: { prompt_version: options.promptVersion ?? "customer-service-v1.0", knowledge_base_version: options.knowledgeBaseVersion ?? "kb-2026.09", human_edit_record: null },
   };
 }

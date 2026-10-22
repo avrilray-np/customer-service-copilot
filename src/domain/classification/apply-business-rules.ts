@@ -62,11 +62,18 @@ export function applyBusinessRules(candidate: AiAnalysisCandidate, input: AiAnal
     /(?:不想用了|不需要了).{0,8}(?:处理一下|帮我处理)/u.test(message);
   const requiredEvidencePresent =
     input.knowledge_sources.length > 0 &&
+    (!input.retrieval_status || input.retrieval_status === "available") &&
     (input.identity_status === "not_required" ||
       (input.identity_status === "verified" && input.user_data_sources.length > 0));
 
+  const retrievalEvidenceStatus = input.retrieval_status === "conflicting"
+    ? "conflicting"
+    : input.retrieval_status && input.retrieval_status !== "available"
+      ? "insufficient"
+      : candidate.evidence_status;
   let next: AiAnalysisCandidate = {
     ...candidate,
+    evidence_status: retrievalEvidenceStatus,
     subtypes: withoutSubtypes(candidate.subtypes, ["refund", "report", "account_security", "legal_or_safety", "unsubscribe", "reissue", "complaint", "suggestion", "general_operation"]),
   };
 
@@ -106,7 +113,9 @@ export function applyBusinessRules(candidate: AiAnalysisCandidate, input: AiAnal
       ...next,
       handling_category: "low_risk_info",
       risk_level: "low",
-      evidence_status: requiredEvidencePresent ? next.evidence_status : "insufficient",
+      evidence_status: next.evidence_status === "conflicting"
+        ? "conflicting"
+        : requiredEvidencePresent ? next.evidence_status : "insufficient",
       recommended_action: "assign_tier1",
     };
   }

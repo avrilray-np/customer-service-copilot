@@ -3,6 +3,19 @@ import { GeminiAiProvider } from "@/ai/gemini-ai-provider";
 import { caseOneInput } from "@/data/demos/case-one";
 import { caseThreeInput } from "@/data/demos/case-three";
 
+const caseOneRagInput = {
+  ...caseOneInput,
+  retrieval_status: "available" as const,
+  knowledge_base_version: "kb-test",
+  knowledge_sources: [{ chunk_id: "KB-MEMBER-001#cancel-current-entitlement", document_id: "KB-MEMBER-001", title: "会员自动续订与退订规则", section: "当前周期权益", version: "2026.09", quote: "取消续订不影响当前权益。" }],
+};
+const caseThreeRagInput = {
+  ...caseThreeInput,
+  retrieval_status: "available" as const,
+  knowledge_base_version: "kb-test",
+  knowledge_sources: [{ chunk_id: "KB-REFUND-007#refund-tier2", document_id: "KB-REFUND-007", title: "退款规则", section: "二线审核", version: "2026.09", quote: "退款必须由二线审核。" }],
+};
+
 function structuredResult(overrides: Record<string, unknown> = {}) {
   return {
     summary: "用户已取消自动续订，咨询会员有效期和后续扣费。",
@@ -14,7 +27,7 @@ function structuredResult(overrides: Record<string, unknown> = {}) {
     reply: "当前会员有效，自动续订已取消，到期后不会继续扣费。",
     evidence_status: "sufficient",
     recommended_action: "reply",
-    knowledge_source_ids: ["KB-MEMBER-001"],
+    knowledge_chunk_ids: ["KB-MEMBER-001#cancel-current-entitlement"],
     user_data_source_names: ["demo_membership_service"],
     missing_information: [],
     ...overrides,
@@ -26,9 +39,15 @@ describe("GeminiAiProvider", () => {
     const create = vi.fn().mockResolvedValue({ output_text: JSON.stringify(structuredResult()) });
     const provider = new GeminiAiProvider({ model: "test-model", client: { interactions: { create } } });
 
-    const candidate = await provider.analyze(caseOneInput);
+    const candidate = await provider.analyze(caseOneRagInput);
 
-    expect(candidate.knowledge_sources).toEqual(caseOneInput.knowledge_sources);
+    expect(candidate.knowledge_sources).toEqual(caseOneRagInput.knowledge_sources.map((source) => ({
+      document_id: source.document_id,
+      title: source.title,
+      section: source.section,
+      version: source.version,
+      quote: source.quote,
+    })));
     expect(candidate.user_data_sources).toEqual(caseOneInput.user_data_sources);
     expect(candidate.recommended_action).toBe("reply");
     const request = create.mock.calls[0][0];
@@ -42,10 +61,10 @@ describe("GeminiAiProvider", () => {
   });
 
   it("rejects a source id that was not supplied by the application", async () => {
-    const output = structuredResult({ knowledge_source_ids: ["KB-FABRICATED-999"] });
+    const output = structuredResult({ knowledge_chunk_ids: ["KB-FABRICATED-999#fake"] });
     const provider = new GeminiAiProvider({ client: { interactions: { create: vi.fn().mockResolvedValue({ output_text: JSON.stringify(output) }) } } });
 
-    await expect(provider.analyze(caseOneInput)).rejects.toMatchObject({
+    await expect(provider.analyze(caseOneRagInput)).rejects.toMatchObject({
       code: "invalid_response",
     });
   });
@@ -54,12 +73,12 @@ describe("GeminiAiProvider", () => {
     const unsafeClassification = structuredResult({
       summary: "用户咨询扣费。",
       subtypes: ["renewal_query"],
-      knowledge_source_ids: ["KB-REFUND-007"],
+      knowledge_chunk_ids: ["KB-REFUND-007#refund-tier2"],
       user_data_source_names: ["demo_payment_service"],
     });
     const provider = new GeminiAiProvider({ client: { interactions: { create: vi.fn().mockResolvedValue({ output_text: JSON.stringify(unsafeClassification) }) } } });
 
-    const candidate = await provider.analyze(caseThreeInput);
+    const candidate = await provider.analyze(caseThreeRagInput);
 
     expect(candidate.handling_category).toBe("high_risk");
     expect(candidate.risk_level).toBe("high");
@@ -72,7 +91,7 @@ describe("GeminiAiProvider", () => {
     const output = structuredResult({ reply: "已退款成功，请查收。" });
     const provider = new GeminiAiProvider({ client: { interactions: { create: vi.fn().mockResolvedValue({ output_text: JSON.stringify(output) }) } } });
 
-    await expect(provider.analyze(caseOneInput)).rejects.toMatchObject({
+    await expect(provider.analyze(caseOneRagInput)).rejects.toMatchObject({
       code: "policy_violation",
     });
   });
@@ -85,7 +104,7 @@ describe("GeminiAiProvider", () => {
     const output = structuredResult({ reply });
     const provider = new GeminiAiProvider({ client: { interactions: { create: vi.fn().mockResolvedValue({ output_text: JSON.stringify(output) }) } } });
 
-    await expect(provider.analyze(caseOneInput)).rejects.toMatchObject({ code: "policy_violation" });
+    await expect(provider.analyze(caseOneRagInput)).rejects.toMatchObject({ code: "policy_violation" });
   });
 
   it.each([
@@ -95,11 +114,11 @@ describe("GeminiAiProvider", () => {
     const output = structuredResult({ reply });
     const provider = new GeminiAiProvider({ client: { interactions: { create: vi.fn().mockResolvedValue({ output_text: JSON.stringify(output) }) } } });
 
-    await expect(provider.analyze(caseOneInput)).resolves.toMatchObject({ reply });
+    await expect(provider.analyze(caseOneRagInput)).resolves.toMatchObject({ reply });
   });
 
   it("returns a diagnostic error when the SDK response is empty", async () => {
     const provider = new GeminiAiProvider({ client: { interactions: { create: vi.fn().mockResolvedValue({}) } } });
-    await expect(provider.analyze(caseOneInput)).rejects.toMatchObject({ code: "empty_response" });
+    await expect(provider.analyze(caseOneRagInput)).rejects.toMatchObject({ code: "empty_response" });
   });
 });

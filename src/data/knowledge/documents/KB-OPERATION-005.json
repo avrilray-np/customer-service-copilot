@@ -1,0 +1,15 @@
+{
+  "document_id": "KB-OPERATION-005",
+  "title": "客服业务操作与状态查询边界",
+  "version": "2026.10",
+  "status": "active",
+  "language": "zh-CN",
+  "effective_from": "2026-10-01T00:00:00+08:00",
+  "effective_to": null,
+  "supersedes_document_id": null,
+  "business_domains": ["operation", "workflow"],
+  "applicable_products": ["all"],
+  "audiences": ["ai", "tier1", "tier2"],
+  "source_owner": "客服运营部",
+  "updated_at": "2026-10-01T00:00:00+08:00"
+}

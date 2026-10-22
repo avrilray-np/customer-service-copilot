@@ -1,0 +1,164 @@
+{
+  "case_count": 12,
+  "recall_at_3": 0.9583333333333334,
+  "mrr": 0.9583333333333334,
+  "cases": [
+    {
+      "eval_id": "BM25-001",
+      "retrieved_chunk_ids": [
+        "KB-BENEFIT-003#eligible-products-current",
+        "KB-MEMBER-001#cancel-current-entitlement",
+        "KB-MEMBER-001#unsubscribe-human-action"
+      ],
+      "relevant_chunk_ids": [
+        "KB-MEMBER-001#cancel-current-entitlement"
+      ],
+      "recall_at_3": 1,
+      "reciprocal_rank": 0.5
+    },
+    {
+      "eval_id": "BM25-002",
+      "retrieved_chunk_ids": [
+        "KB-MEMBER-001#cancel-next-charge",
+        "KB-MEMBER-001#cancel-not-refund",
+        "KB-REFUND-007#post-cancellation-charge"
+      ],
+      "relevant_chunk_ids": [
+        "KB-MEMBER-001#cancel-next-charge"
+      ],
+      "recall_at_3": 1,
+      "reciprocal_rank": 1
+    },
+    {
+      "eval_id": "BM25-003",
+      "retrieved_chunk_ids": [
+        "KB-BENEFIT-003#eligible-products-current",
+        "KB-BENEFIT-003#ineligible-no-auto-reissue",
+        "KB-REFUND-007#refund-with-reissue"
+      ],
+      "relevant_chunk_ids": [
+        "KB-BENEFIT-003#eligible-products-current"
+      ],
+      "recall_at_3": 1,
+      "reciprocal_rank": 1
+    },
+    {
+      "eval_id": "BM25-004",
+      "retrieved_chunk_ids": [
+        "KB-BENEFIT-003#coupon-status-data",
+        "KB-BENEFIT-003#coupon-delivery-window",
+        "KB-OPERATION-005#write-action-tier1"
+      ],
+      "relevant_chunk_ids": [
+        "KB-BENEFIT-003#coupon-status-data"
+      ],
+      "recall_at_3": 1,
+      "reciprocal_rank": 1
+    },
+    {
+      "eval_id": "BM25-005",
+      "retrieved_chunk_ids": [
+        "KB-BENEFIT-004#qualification-dispute-review",
+        "KB-BENEFIT-004#compensation-missing-information",
+        "KB-COMPLAINT-006#complaint-registration"
+      ],
+      "relevant_chunk_ids": [
+        "KB-BENEFIT-004#qualification-dispute-review"
+      ],
+      "recall_at_3": 1,
+      "reciprocal_rank": 1
+    },
+    {
+      "eval_id": "BM25-006",
+      "retrieved_chunk_ids": [
+        "KB-REFUND-007#refund-tier2",
+        "KB-REFUND-007#refund-identity",
+        "KB-BENEFIT-003#eligible-products-current"
+      ],
+      "relevant_chunk_ids": [
+        "KB-REFUND-007#refund-tier2"
+      ],
+      "recall_at_3": 1,
+      "reciprocal_rank": 1
+    },
+    {
+      "eval_id": "BM25-007",
+      "retrieved_chunk_ids": [
+        "KB-REFUND-007#post-cancellation-charge",
+        "KB-MEMBER-001#cancel-current-entitlement",
+        "KB-MEMBER-001#cancel-next-charge"
+      ],
+      "relevant_chunk_ids": [
+        "KB-REFUND-007#post-cancellation-charge"
+      ],
+      "recall_at_3": 1,
+      "reciprocal_rank": 1
+    },
+    {
+      "eval_id": "BM25-008",
+      "retrieved_chunk_ids": [
+        "KB-SECURITY-008#account-security",
+        "KB-MEMBER-001#cancel-next-charge",
+        "KB-MEMBER-001#cancel-not-refund"
+      ],
+      "relevant_chunk_ids": [
+        "KB-SECURITY-008#account-security"
+      ],
+      "recall_at_3": 1,
+      "reciprocal_rank": 1
+    },
+    {
+      "eval_id": "BM25-009",
+      "retrieved_chunk_ids": [
+        "KB-ACCOUNT-009#profile-change",
+        "KB-ACCOUNT-009#personal-data-boundary",
+        "KB-OPERATION-005#write-action-tier1"
+      ],
+      "relevant_chunk_ids": [
+        "KB-ACCOUNT-009#profile-change"
+      ],
+      "recall_at_3": 1,
+      "reciprocal_rank": 1
+    },
+    {
+      "eval_id": "BM25-010",
+      "retrieved_chunk_ids": [
+        "KB-MEMBER-002#membership-expiry-query",
+        "KB-BENEFIT-003#coupon-delivery-window",
+        "KB-MEMBER-002#general-benefit-query"
+      ],
+      "relevant_chunk_ids": [
+        "KB-MEMBER-002#membership-expiry-query"
+      ],
+      "recall_at_3": 1,
+      "reciprocal_rank": 1
+    },
+    {
+      "eval_id": "BM25-011",
+      "retrieved_chunk_ids": [
+        "KB-BENEFIT-003#eligible-products-current",
+        "KB-BENEFIT-003#ineligible-no-auto-reissue",
+        "KB-MEMBER-001#cancel-not-refund"
+      ],
+      "relevant_chunk_ids": [
+        "KB-BENEFIT-003#eligible-products-current",
+        "KB-BENEFIT-003#coupon-delivery-window"
+      ],
+      "recall_at_3": 0.5,
+      "reciprocal_rank": 1
+    },
+    {
+      "eval_id": "BM25-012",
+      "retrieved_chunk_ids": [
+        "KB-OPERATION-005#ambiguous-request",
+        "KB-MEMBER-001#unsubscribe-human-action",
+        "KB-OPERATION-005#status-query-readonly"
+      ],
+      "relevant_chunk_ids": [
+        "KB-OPERATION-005#ambiguous-request"
+      ],
+      "recall_at_3": 1,
+      "reciprocal_rank": 1
+    }
+  ]
+}

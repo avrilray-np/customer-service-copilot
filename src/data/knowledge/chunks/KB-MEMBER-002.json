@@ -1,0 +1,70 @@
+[
+  {
+    "chunk_id": "KB-MEMBER-002#membership-expiry-query",
+    "document_id": "KB-MEMBER-002",
+    "section_path": [
+      "个人会员信息",
+      "到期时间"
+    ],
+    "text": "会员到期时间属于用户个人状态。身份核验通过后，可结合会员服务查询结果回复；知识规则本身不能推断具体日期。",
+    "keywords": [
+      "会员什么时候到期",
+      "权益到期",
+      "有效期",
+      "个人状态"
+    ],
+    "issue_subtypes": [
+      "membership_query"
+    ],
+    "rule_key": "membership.expiry.identity",
+    "decision_value": "verified_user_data_required",
+    "priority": 100,
+    "checksum": "sha256:71b70118e03d36b622b9f3417eed6d7a50493212f0d0b490de9a1b38eadf3c0a"
+  },
+  {
+    "chunk_id": "KB-MEMBER-002#membership-status-identity",
+    "document_id": "KB-MEMBER-002",
+    "section_path": [
+      "个人会员信息",
+      "身份核验"
+    ],
+    "text": "查询会员是否有效、自动续订是否开启或个人消费记录前必须完成身份核验。未核验身份时不得直接披露个人状态，应转人工核验。",
+    "keywords": [
+      "会员状态",
+      "自动续订状态",
+      "身份未验证",
+      "个人信息"
+    ],
+    "issue_subtypes": [
+      "membership_query",
+      "renewal_query",
+      "consumption_record_query"
+    ],
+    "rule_key": "membership.personal_data.identity",
+    "decision_value": "identity_verification_required",
+    "priority": 100,
+    "checksum": "sha256:631e1a9ce71ea2a56aad5376613c24def159e6b751199f22f8b3a6390c9f4172"
+  },
+  {
+    "chunk_id": "KB-MEMBER-002#general-benefit-query",
+    "document_id": "KB-MEMBER-002",
+    "section_path": [
+      "通用制度",
+      "会员权益介绍"
+    ],
+    "text": "不涉及具体用户状态的会员权益、产品规则和使用方式可以作为通用信息回答，不要求查询个人记录。",
+    "keywords": [
+      "会员有什么权益",
+      "会员规则",
+      "通用咨询",
+      "产品介绍"
+    ],
+    "issue_subtypes": [
+      "policy_query"
+    ],
+    "rule_key": "membership.general_policy.identity",
+    "decision_value": "identity_not_required",
+    "priority": 80,
+    "checksum": "sha256:ab07ada0ad1f005615aa6378f0e9aad7e73bf13fbfaabde175aeb87e8b15338d"
+  }
+]

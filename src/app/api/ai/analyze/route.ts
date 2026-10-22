@@ -2,9 +2,10 @@ import { NextResponse } from "next/server";
 import { createProviderSelection } from "@/ai/provider-factory";
 import { publicAiProviderErrorMessage } from "@/ai/ai-provider-error";
 import { caseOneInput } from "@/data/demos/case-one";
-import { caseTwoFollowUp, caseTwoInput } from "@/data/demos/case-two";
+import { caseTwoFollowUpInput, caseTwoInput } from "@/data/demos/case-two";
 import { caseThreeInput } from "@/data/demos/case-three";
 import { assertAiCandidate } from "@/validation/ai-candidate-validator";
+import { prepareRagAnalysis } from "@/rag/demo-rag-pipeline";
 
 export const runtime = "nodejs";
 
@@ -12,10 +13,7 @@ const demoInputs = {
   "case-one": caseOneInput,
   "case-two": caseTwoInput,
   "case-three": caseThreeInput,
-  "case-two-follow-up": {
-    ...caseTwoInput,
-    message: `${caseTwoInput.message}\n用户追加诉求：${caseTwoFollowUp}`,
-  },
+  "case-two-follow-up": caseTwoFollowUpInput,
 } as const;
 
 type DemoAnalysisRequest = keyof typeof demoInputs;
@@ -48,9 +46,10 @@ export async function POST(request: Request) {
     if (selection.mode === "mock") {
       return NextResponse.json({ error: "服务器尚未配置真实AI，当前只能使用Mock Mode。" }, { status: 503 });
     }
-    const candidate = await selection.provider.analyze(demoInputs[demoCase]);
+    const prepared = await prepareRagAnalysis(demoInputs[demoCase]);
+    const candidate = await selection.provider.analyze(prepared.input);
     assertAiCandidate(candidate);
-    return NextResponse.json({ candidate, mode: selection.mode, model: selection.model });
+    return NextResponse.json({ candidate, retrieval_trace: prepared.trace, mode: selection.mode, model: selection.model });
   } catch (error) {
     const requestedMode = process.env.AI_MODE?.trim().toLowerCase();
     const providerName = requestedMode === "deepseek" ? "DeepSeek" : requestedMode === "gemini" ? "Gemini" : "AI";

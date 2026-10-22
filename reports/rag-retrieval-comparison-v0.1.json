@@ -1,0 +1,543 @@
+{
+  "generated_at": "2026-10-21T12:37:54.241Z",
+  "knowledge_base_version": "kb-2026.10-rag-v0.1",
+  "embedding_provider": "siliconflow",
+  "embedding_model": "BAAI/bge-m3",
+  "dimensions": 1024,
+  "case_count": 12,
+  "top_k": 3,
+  "lexical_fallback_enabled": false,
+  "modes": [
+    {
+      "mode": "bm25",
+      "case_count": 12,
+      "recall_at_3": 0.9583333333333334,
+      "mrr": 0.9583333333333334,
+      "average_total_ms": 0.4879166666666667,
+      "cases": [
+        {
+          "eval_id": "BM25-001",
+          "recall_at_3": 1,
+          "reciprocal_rank": 0.5,
+          "retrieved_chunk_ids": [
+            "KB-BENEFIT-003#eligible-products-current",
+            "KB-MEMBER-001#cancel-current-entitlement",
+            "KB-MEMBER-001#unsubscribe-human-action"
+          ],
+          "total_ms": 1.758,
+          "mode_used": "bm25",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "BM25-002",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "retrieved_chunk_ids": [
+            "KB-MEMBER-001#cancel-next-charge",
+            "KB-MEMBER-001#cancel-not-refund",
+            "KB-REFUND-007#post-cancellation-charge"
+          ],
+          "total_ms": 0.518,
+          "mode_used": "bm25",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "BM25-003",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "retrieved_chunk_ids": [
+            "KB-BENEFIT-003#eligible-products-current",
+            "KB-BENEFIT-003#ineligible-no-auto-reissue",
+            "KB-REFUND-007#refund-with-reissue"
+          ],
+          "total_ms": 0.389,
+          "mode_used": "bm25",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "BM25-004",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "retrieved_chunk_ids": [
+            "KB-BENEFIT-003#coupon-status-data",
+            "KB-BENEFIT-003#coupon-delivery-window",
+            "KB-OPERATION-005#write-action-tier1"
+          ],
+          "total_ms": 0.41,
+          "mode_used": "bm25",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "BM25-005",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "retrieved_chunk_ids": [
+            "KB-BENEFIT-004#qualification-dispute-review",
+            "KB-BENEFIT-004#compensation-missing-information",
+            "KB-COMPLAINT-006#complaint-registration"
+          ],
+          "total_ms": 0.471,
+          "mode_used": "bm25",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "BM25-006",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "retrieved_chunk_ids": [
+            "KB-REFUND-007#refund-tier2",
+            "KB-REFUND-007#refund-identity",
+            "KB-BENEFIT-003#eligible-products-current"
+          ],
+          "total_ms": 0.226,
+          "mode_used": "bm25",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "BM25-007",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "retrieved_chunk_ids": [
+            "KB-REFUND-007#post-cancellation-charge",
+            "KB-MEMBER-001#cancel-current-entitlement",
+            "KB-MEMBER-001#cancel-next-charge"
+          ],
+          "total_ms": 0.346,
+          "mode_used": "bm25",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "BM25-008",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "retrieved_chunk_ids": [
+            "KB-SECURITY-008#account-security",
+            "KB-MEMBER-001#cancel-next-charge",
+            "KB-MEMBER-001#cancel-not-refund"
+          ],
+          "total_ms": 0.612,
+          "mode_used": "bm25",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "BM25-009",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "retrieved_chunk_ids": [
+            "KB-ACCOUNT-009#profile-change",
+            "KB-ACCOUNT-009#personal-data-boundary",
+            "KB-OPERATION-005#write-action-tier1"
+          ],
+          "total_ms": 0.327,
+          "mode_used": "bm25",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "BM25-010",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "retrieved_chunk_ids": [
+            "KB-MEMBER-002#membership-expiry-query",
+            "KB-BENEFIT-003#coupon-delivery-window",
+            "KB-MEMBER-002#general-benefit-query"
+          ],
+          "total_ms": 0.335,
+          "mode_used": "bm25",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "BM25-011",
+          "recall_at_3": 0.5,
+          "reciprocal_rank": 1,
+          "retrieved_chunk_ids": [
+            "KB-BENEFIT-003#eligible-products-current",
+            "KB-BENEFIT-003#ineligible-no-auto-reissue",
+            "KB-MEMBER-001#cancel-not-refund"
+          ],
+          "total_ms": 0.284,
+          "mode_used": "bm25",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "BM25-012",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "retrieved_chunk_ids": [
+            "KB-OPERATION-005#ambiguous-request",
+            "KB-MEMBER-001#unsubscribe-human-action",
+            "KB-OPERATION-005#status-query-readonly"
+          ],
+          "total_ms": 0.179,
+          "mode_used": "bm25",
+          "status": "available",
+          "warning": null
+        }
+      ]
+    },
+    {
+      "mode": "vector",
+      "case_count": 12,
+      "recall_at_3": 0.9166666666666666,
+      "mrr": 0.875,
+      "average_total_ms": 22.595250000000004,
+      "cases": [
+        {
+          "eval_id": "BM25-001",
+          "recall_at_3": 1,
+          "reciprocal_rank": 0.5,
+          "retrieved_chunk_ids": [
+            "KB-MEMBER-001#unsubscribe-human-action",
+            "KB-MEMBER-001#cancel-current-entitlement",
+            "KB-MEMBER-002#membership-status-identity"
+          ],
+          "total_ms": 23.324,
+          "mode_used": "vector",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "BM25-002",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "retrieved_chunk_ids": [
+            "KB-MEMBER-001#cancel-next-charge",
+            "KB-REFUND-007#post-cancellation-charge",
+            "KB-MEMBER-001#cancel-current-entitlement"
+          ],
+          "total_ms": 22.597,
+          "mode_used": "vector",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "BM25-003",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "retrieved_chunk_ids": [
+            "KB-BENEFIT-003#eligible-products-current",
+            "KB-BENEFIT-003#ineligible-no-auto-reissue",
+            "KB-MEMBER-002#general-benefit-query"
+          ],
+          "total_ms": 22.528,
+          "mode_used": "vector",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "BM25-004",
+          "recall_at_3": 0,
+          "reciprocal_rank": 0,
+          "retrieved_chunk_ids": [
+            "KB-BENEFIT-003#coupon-delivery-window",
+            "KB-BENEFIT-003#ineligible-no-auto-reissue",
+            "KB-MEMBER-002#membership-status-identity"
+          ],
+          "total_ms": 22.527,
+          "mode_used": "vector",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "BM25-005",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "retrieved_chunk_ids": [
+            "KB-BENEFIT-004#qualification-dispute-review",
+            "KB-BENEFIT-004#compensation-missing-information",
+            "KB-BENEFIT-003#ineligible-no-auto-reissue"
+          ],
+          "total_ms": 22.546,
+          "mode_used": "vector",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "BM25-006",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "retrieved_chunk_ids": [
+            "KB-REFUND-007#refund-tier2",
+            "KB-REFUND-007#post-cancellation-charge",
+            "KB-MEMBER-001#cancel-next-charge"
+          ],
+          "total_ms": 22.557,
+          "mode_used": "vector",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "BM25-007",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "retrieved_chunk_ids": [
+            "KB-REFUND-007#post-cancellation-charge",
+            "KB-MEMBER-001#cancel-next-charge",
+            "KB-MEMBER-001#unsubscribe-human-action"
+          ],
+          "total_ms": 22.55,
+          "mode_used": "vector",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "BM25-008",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "retrieved_chunk_ids": [
+            "KB-SECURITY-008#account-security",
+            "KB-REFUND-007#post-cancellation-charge",
+            "KB-ACCOUNT-009#profile-change"
+          ],
+          "total_ms": 22.512,
+          "mode_used": "vector",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "BM25-009",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "retrieved_chunk_ids": [
+            "KB-ACCOUNT-009#profile-change",
+            "KB-ACCOUNT-009#unverified-profile",
+            "KB-MEMBER-002#membership-status-identity"
+          ],
+          "total_ms": 22.522,
+          "mode_used": "vector",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "BM25-010",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "retrieved_chunk_ids": [
+            "KB-MEMBER-002#membership-expiry-query",
+            "KB-MEMBER-001#cancel-current-entitlement",
+            "KB-BENEFIT-003#coupon-delivery-window"
+          ],
+          "total_ms": 22.514,
+          "mode_used": "vector",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "BM25-011",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "retrieved_chunk_ids": [
+            "KB-BENEFIT-003#coupon-delivery-window",
+            "KB-BENEFIT-003#eligible-products-current",
+            "KB-MEMBER-002#membership-expiry-query"
+          ],
+          "total_ms": 22.492,
+          "mode_used": "vector",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "BM25-012",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "retrieved_chunk_ids": [
+            "KB-OPERATION-005#ambiguous-request",
+            "KB-MEMBER-001#unsubscribe-human-action",
+            "KB-MEMBER-001#cancel-next-charge"
+          ],
+          "total_ms": 22.474,
+          "mode_used": "vector",
+          "status": "available",
+          "warning": null
+        }
+      ]
+    },
+    {
+      "mode": "hybrid",
+      "case_count": 12,
+      "recall_at_3": 1,
+      "mrr": 0.9166666666666666,
+      "average_total_ms": 22.788666666666668,
+      "cases": [
+        {
+          "eval_id": "BM25-001",
+          "recall_at_3": 1,
+          "reciprocal_rank": 0.5,
+          "retrieved_chunk_ids": [
+            "KB-MEMBER-001#unsubscribe-human-action",
+            "KB-MEMBER-001#cancel-current-entitlement",
+            "KB-BENEFIT-003#eligible-products-current"
+          ],
+          "total_ms": 23.151,
+          "mode_used": "hybrid",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "BM25-002",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "retrieved_chunk_ids": [
+            "KB-MEMBER-001#cancel-next-charge",
+            "KB-REFUND-007#post-cancellation-charge",
+            "KB-MEMBER-001#cancel-current-entitlement"
+          ],
+          "total_ms": 22.898,
+          "mode_used": "hybrid",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "BM25-003",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "retrieved_chunk_ids": [
+            "KB-BENEFIT-003#eligible-products-current",
+            "KB-BENEFIT-003#ineligible-no-auto-reissue",
+            "KB-REFUND-007#refund-with-reissue"
+          ],
+          "total_ms": 22.763,
+          "mode_used": "hybrid",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "BM25-004",
+          "recall_at_3": 1,
+          "reciprocal_rank": 0.5,
+          "retrieved_chunk_ids": [
+            "KB-BENEFIT-003#coupon-delivery-window",
+            "KB-BENEFIT-003#coupon-status-data",
+            "KB-OPERATION-005#write-action-tier1"
+          ],
+          "total_ms": 22.832,
+          "mode_used": "hybrid",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "BM25-005",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "retrieved_chunk_ids": [
+            "KB-BENEFIT-004#qualification-dispute-review",
+            "KB-BENEFIT-004#compensation-missing-information",
+            "KB-BENEFIT-003#ineligible-no-auto-reissue"
+          ],
+          "total_ms": 22.86,
+          "mode_used": "hybrid",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "BM25-006",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "retrieved_chunk_ids": [
+            "KB-REFUND-007#refund-tier2",
+            "KB-REFUND-007#refund-identity",
+            "KB-MEMBER-001#cancel-next-charge"
+          ],
+          "total_ms": 22.641,
+          "mode_used": "hybrid",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "BM25-007",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "retrieved_chunk_ids": [
+            "KB-REFUND-007#post-cancellation-charge",
+            "KB-MEMBER-001#cancel-next-charge",
+            "KB-MEMBER-001#cancel-current-entitlement"
+          ],
+          "total_ms": 22.782,
+          "mode_used": "hybrid",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "BM25-008",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "retrieved_chunk_ids": [
+            "KB-SECURITY-008#account-security",
+            "KB-REFUND-007#post-cancellation-charge",
+            "KB-MEMBER-001#cancel-next-charge"
+          ],
+          "total_ms": 22.763,
+          "mode_used": "hybrid",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "BM25-009",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "retrieved_chunk_ids": [
+            "KB-ACCOUNT-009#profile-change",
+            "KB-ACCOUNT-009#unverified-profile",
+            "KB-OPERATION-005#write-action-tier1"
+          ],
+          "total_ms": 22.702,
+          "mode_used": "hybrid",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "BM25-010",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "retrieved_chunk_ids": [
+            "KB-MEMBER-002#membership-expiry-query",
+            "KB-BENEFIT-003#coupon-delivery-window",
+            "KB-MEMBER-001#cancel-current-entitlement"
+          ],
+          "total_ms": 22.707,
+          "mode_used": "hybrid",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "BM25-011",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "retrieved_chunk_ids": [
+            "KB-BENEFIT-003#eligible-products-current",
+            "KB-BENEFIT-003#coupon-delivery-window",
+            "KB-MEMBER-002#membership-expiry-query"
+          ],
+          "total_ms": 22.739,
+          "mode_used": "hybrid",
+          "status": "available",
+          "warning": null
+        },
+        {
+          "eval_id": "BM25-012",
+          "recall_at_3": 1,
+          "reciprocal_rank": 1,
+          "retrieved_chunk_ids": [
+            "KB-OPERATION-005#ambiguous-request",
+            "KB-MEMBER-001#unsubscribe-human-action",
+            "KB-MEMBER-001#cancel-next-charge"
+          ],
+          "total_ms": 22.626,
+          "mode_used": "hybrid",
+          "status": "available",
+          "warning": null
+        }
+      ]
+    }
+  ]
+}

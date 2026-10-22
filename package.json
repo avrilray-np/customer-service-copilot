@@ -11,6 +11,14 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
+    "knowledge:build": "node scripts/build-knowledge-manifest.mjs",
+    "knowledge:build-embeddings": "node scripts/build-embedding-index.mjs",
+    "rag:evaluate:bm25": "RAG_WRITE_REPORT=1 vitest run tests/evaluation/bm25-baseline.test.ts",
+    "rag:evaluate:live": "RAG_LIVE_EVALUATION=1 vitest run tests/evaluation/retrieval-comparison.test.ts",
+    "rag:evaluate:formal:bm25": "RAG_WRITE_FORMAL_REPORT=1 vitest run tests/evaluation/formal-rag-bm25.test.ts",
+    "rag:evaluate:formal:live": "RAG_LIVE_FORMAL_EVALUATION=1 vitest run tests/evaluation/formal-retrieval-comparison.test.ts",
+    "rag:human-template": "node scripts/build-rag-human-template.mjs",
+    "rag:smoke:demo": "RAG_LIVE_DEMO=1 vitest run tests/evaluation/demo-rag-runtime.test.ts",
     "test:e2e": "playwright test"
   },
   "dependencies": {

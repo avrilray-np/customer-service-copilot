@@ -1,6 +1,6 @@
 # Customer Service Copilot
 
-一个可交互的客服AI工单演示项目：AI先识别用户诉求、查询可信依据并生成结构化工单，再依据风险和证据状态自动回复或转交人工客服。
+一个可交互的客服RAG与AI工单演示项目：系统在运行时从版本化知识库检索依据，经EvidenceGate判断证据是否可用，再由AI识别诉求并生成结构化工单，最后依据风险和证据状态自动回复或转交人工客服。
 
 项目重点展示AI如何参与现有客服工单流程，同时通过确定性业务规则限制AI权限。补发、退订、退款、举报登记等操作均由人工确认，AI不会直接执行真实业务写操作。
 
@@ -31,8 +31,15 @@
 
 ```mermaid
 flowchart LR
-    U[用户语音转写] --> P[AI Provider]
-    K[本地知识与用户记录] --> P
+    U[用户语音转写] --> M[元数据过滤]
+    K[版本化知识片段] --> M
+    M --> B[BM25]
+    M --> V[Embedding向量检索]
+    B --> F[RRF融合 Top-K]
+    V --> F
+    F --> G[EvidenceGate]
+    G --> P[AI Provider]
+    D[已验证用户记录] --> P
     P --> S[结构化输出校验]
     S --> R[确定性业务规则]
     R --> T[工单状态机]
@@ -42,6 +49,8 @@ flowchart LR
 ```
 
 - Next.js 16、React、TypeScript、Tailwind CSS 4
+- 33个版本化知识片段、中文BM25、SiliconFlow `BAAI/bge-m3`向量检索与RRF融合
+- EvidenceGate、片段ID引用白名单和客服端可折叠检索轨迹
 - DeepSeek Responses API真实模式
 - Mock AI稳定演示与自动化测试
 - Gemini备用Provider
@@ -58,7 +67,19 @@ cp .env.example .env.local
 npm run dev
 ```
 
-打开 [http://localhost:3000](http://localhost:3000)。默认使用Mock模式，不访问外部AI服务。
+打开 [http://localhost:3000](http://localhost:3000)。默认使用Mock生成模式，不调用DeepSeek或Gemini。若配置了SiliconFlow，Mock和AI模式都会运行真实Hybrid检索；未配置或Embedding失败时，页面会明确显示实际降级为BM25。
+
+### 启用Hybrid检索
+
+在未提交的 `.env.local` 中配置：
+
+```dotenv
+SILICONFLOW_API_KEY=your_api_key
+EMBEDDING_MODEL=BAAI/bge-m3
+RAG_ALLOW_LEXICAL_FALLBACK=true
+```
+
+查询Embedding只接收问题文本和检索元数据，不发送UID、订单号、交易号或个人会员记录。客服端工单详情中的“查看检索轨迹”会显示实际模式、片段排名、RRF分数、索引版本和耗时；用户端不展示内部检索信息。
 
 ### 启用DeepSeek
 
@@ -80,9 +101,13 @@ npm run typecheck
 npm run lint
 npm run build
 AI_MODE=mock npm run test:e2e
+npm run rag:smoke:demo
+npm run rag:evaluate:formal:bm25
+npm run rag:evaluate:formal:live
+npm run rag:human-template
 ```
 
-分类与流转测试会读取仓库内的32条验收案例，覆盖混合诉求、身份未验证、证据不足、来源冲突、低置信、人工接管及高风险转派。
+分类与流转测试会读取仓库内的32条验收案例，覆盖混合诉求、身份未验证、证据不足、来源冲突、低置信、人工接管及高风险转派。RAG保留12题历史基线，并另有30题正式检索评估集。2026-10-22的真实对比中，BM25、Vector、Hybrid的Recall@3分别为0.8750、0.9107、0.9286，EvidenceGate准确率分别为1.0000、0.9667、1.0000；完整的MRR、Precision@3、P50/P95和逐题Top-3保存在 [`reports/rag-formal-retrieval-comparison-v0.1.md`](./reports/rag-formal-retrieval-comparison-v0.1.md)。生成回答与人工质量评分尚未执行。
 
 ## 项目边界
 

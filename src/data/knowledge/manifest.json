@@ -1,0 +1,25 @@
+{
+  "knowledge_base_version": "kb-2026.10-rag-v0.1",
+  "built_at": "2026-10-21T11:56:12.756Z",
+  "document_ids": [
+    "KB-ACCOUNT-009",
+    "KB-BENEFIT-003",
+    "KB-BENEFIT-004",
+    "KB-BENEFIT-OLD-010",
+    "KB-COMPLAINT-006",
+    "KB-MEMBER-001",
+    "KB-MEMBER-002",
+    "KB-OPERATION-005",
+    "KB-REFUND-007",
+    "KB-SECURITY-008"
+  ],
+  "chunk_count": 33,
+  "content_checksum": "sha256:0d8858ca8098d9439d682b9533d426564c61b91e4e67bc74c9e960486615ade8",
+  "embedding": {
+    "provider": "siliconflow",
+    "model": "BAAI/bge-m3",
+    "dimensions": 1024,
+    "normalized": true,
+    "index_file": "src/data/knowledge/index/embeddings-v0.1.json"
+  }
+}

@@ -1,0 +1,70 @@
+[
+  {
+    "chunk_id": "KB-SECURITY-008#report-tier2",
+    "document_id": "KB-SECURITY-008",
+    "section_path": [
+      "举报",
+      "二线登记"
+    ],
+    "text": "用户明确举报平台、虚假宣传或其他事项时必须进入二线登记和核查。AI可以记录举报对象与理由，但不能判断举报成立。",
+    "keywords": [
+      "我要举报",
+      "虚假宣传",
+      "举报登记",
+      "不能判定成立"
+    ],
+    "issue_subtypes": [
+      "report"
+    ],
+    "rule_key": "security.report.routing",
+    "decision_value": "tier2_registration_required",
+    "priority": 100,
+    "checksum": "sha256:e89eade18de58539332cb82cc299f2ce4c98cca0af45b8edce0cbced6290d2a5"
+  },
+  {
+    "chunk_id": "KB-SECURITY-008#account-security",
+    "document_id": "KB-SECURITY-008",
+    "section_path": [
+      "账户安全",
+      "异常登录与身份冒用"
+    ],
+    "text": "发现陌生登录、身份冒用、非本人开通或未知扣费时，必须进入二线安全核查；涉及资金时同时核对支付记录并可转支付与风控部门。",
+    "keywords": [
+      "别人登录",
+      "冒用身份",
+      "非本人开通",
+      "未知扣费",
+      "账户安全"
+    ],
+    "issue_subtypes": [
+      "account_security",
+      "refund"
+    ],
+    "rule_key": "security.account.escalation",
+    "decision_value": "tier2_security_review",
+    "priority": 100,
+    "checksum": "sha256:f54a15eced96fb9042224ecab6794f5e663cba21e0a2eea0fd87d878fcb148b6"
+  },
+  {
+    "chunk_id": "KB-SECURITY-008#legal-safety",
+    "document_id": "KB-SECURITY-008",
+    "section_path": [
+      "法律与安全",
+      "升级处理"
+    ],
+    "text": "涉及起诉、法律责任、人身安全或其他安全风险的诉求必须进入二线或相关安全部门。AI不得给出处理结果承诺。",
+    "keywords": [
+      "起诉",
+      "法律风险",
+      "人身安全",
+      "安全部门"
+    ],
+    "issue_subtypes": [
+      "legal_or_safety"
+    ],
+    "rule_key": "security.legal_safety.routing",
+    "decision_value": "tier2_or_safety_department",
+    "priority": 100,
+    "checksum": "sha256:14a877b5453ad1ea7fadba676eb8c0ba5176d8371603bfb3fc1ca9cd066c0e7e"
+  }
+]

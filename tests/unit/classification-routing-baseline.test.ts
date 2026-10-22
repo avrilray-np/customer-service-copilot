@@ -64,6 +64,7 @@ const rows = loadAcceptanceRows();
 const ordinaryRows = rows.filter((row) => row.case_id !== "T031");
 
 const knowledgeSource = {
+  chunk_id: "KB-POLICY-BASELINE#rule",
   document_id: "KB-ACCEPTANCE-001",
   title: "分类与流转验收规则",
   section: "测试基线",
@@ -124,7 +125,8 @@ describe("32-case classification and routing acceptance baseline", () => {
   });
 
   it.each(ordinaryRows)("$case_id: $test_focus", (row) => {
-    const result = applyBusinessRules(candidateFor(row), inputFor(row));
+    const input = inputFor(row);
+    const result = applyBusinessRules(candidateFor(row), input);
 
     expect(result.handling_category).toBe(row.expected_category);
     expect([...result.subtypes].sort()).toEqual([...expectedSubtypes(row)].sort());
@@ -144,7 +146,7 @@ describe("32-case classification and routing acceptance baseline", () => {
         reply: result.reply,
         evidence_status: result.evidence_status,
         recommended_action: result.recommended_action,
-        knowledge_source_ids: result.knowledge_sources.map((source) => source.document_id),
+        knowledge_chunk_ids: input.knowledge_sources.map((source) => source.chunk_id),
         user_data_source_names: result.user_data_sources.map((source) => source.source),
         missing_information: result.missing_information,
       }),

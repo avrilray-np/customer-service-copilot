@@ -11,7 +11,7 @@ export interface AiStructuredAnalysis {
   reply: string;
   evidence_status: "sufficient" | "insufficient" | "conflicting";
   recommended_action: "reply" | "ask_clarification" | "assign_tier1" | "assign_tier2" | "notify_department";
-  knowledge_source_ids: string[];
+  knowledge_chunk_ids: string[];
   user_data_source_names: string[];
   missing_information: string[];
 }

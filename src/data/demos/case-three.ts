@@ -10,15 +10,7 @@ export const caseThreeInput: AiAnalysisInput = {
     charge_amount: 30,
     payment_transaction: "PAY-DEMO-9031",
   },
-  knowledge_sources: [
-    {
-      document_id: "KB-REFUND-007",
-      title: "自动续订扣费争议与退款处理规则",
-      section: "取消时间、扣费时间与退款权限",
-      version: "2026.09",
-      quote: "涉及资金退回或举报的工单必须由二线客服核验取消时间、扣费记录和支付状态；AI不得承诺退款或判断举报成立。",
-    },
-  ],
+  knowledge_sources: [],
   user_data_sources: [
     {
       source: "demo_payment_service",
@@ -26,6 +18,11 @@ export const caseThreeInput: AiAnalysisInput = {
       queried_at: "2026-09-01T11:20:08+08:00",
     },
   ],
+  retrieval_context: {
+    query_time: "2026-10-21T11:20:08+08:00",
+    audience: "ai",
+    known_product_type: "continuous_monthly",
+  },
 };
 
 export const caseThreeFacts = {

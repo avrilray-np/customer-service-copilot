@@ -215,6 +215,17 @@ button, input { font: inherit; }
 .detail-facts-grid .meta-item { border-radius: 9px; background: #eef8fe; }
 .ai-processing-card { padding-top: 13px; padding-bottom: 13px; }
 .ai-processing-card .card-heading { margin-bottom: 7px; }
+.retrieval-trace { margin-top: 9px; border-top: 1px solid #dcecf6; padding-top: 8px; }
+.retrieval-trace summary { width: fit-content; color: #4e7c9c; cursor: pointer; font-size: 8px; font-weight: 800; }
+.trace-summary-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-top: 8px; }
+.trace-summary-grid div { display: flex; min-width: 0; flex-direction: column; gap: 3px; padding: 7px 8px; border-radius: 8px; background: #f2f8fc; }
+.trace-summary-grid span { color: #8499aa; font-size: 7px; }
+.trace-summary-grid strong { overflow-wrap: anywhere; color: #355d78; font-size: 8px; }
+.trace-warning { margin: 7px 0 0; padding: 7px 8px; border-radius: 8px; background: #fff7e6; color: #8a641f; font-size: 8px; line-height: 1.45; }
+.trace-hit-list { display: grid; gap: 5px; margin: 8px 0 0; padding: 0; list-style: none; }
+.trace-hit-list li { display: grid; grid-template-columns: minmax(150px, 1.2fr) minmax(120px, 1fr) minmax(170px, 1.2fr); gap: 8px; align-items: center; padding: 7px 8px; border: 1px solid #e3eef5; border-radius: 8px; color: #58758a; font-size: 8px; }
+.trace-hit-list strong { overflow-wrap: anywhere; color: #28566f; }
+.trace-hit-list small { color: #7e95a6; }
 .ai-status-line { display: grid; grid-template-columns: minmax(120px, .55fr) minmax(0, 1.45fr); gap: 8px; }
 .ai-status-line > div { display: flex; align-items: baseline; gap: 7px; padding: 8px 10px; border-radius: 8px; background: #eef8fe; font-size: 9px; }
 .ai-status-line span { flex: 0 0 auto; color: #718b9e; }
@@ -296,7 +307,8 @@ button, input { font: inherit; }
   .ticket-list-page { overflow-x: auto; }
   .detail-grid { grid-template-columns: 1fr; }
   .full-card { grid-column: auto; }
-  .summary-recording-grid, .detail-facts-grid, .workflow-facts, .result-audit-grid, .evidence-grid, .ai-status-line { grid-template-columns: 1fr; }
+  .summary-recording-grid, .detail-facts-grid, .workflow-facts, .result-audit-grid, .evidence-grid, .ai-status-line, .trace-summary-grid { grid-template-columns: 1fr; }
+  .trace-hit-list li { grid-template-columns: 1fr; gap: 3px; }
   .case-switcher { max-width: calc(100% - 16px); overflow-x: auto; }
   .case-switcher button { white-space: nowrap; }
   .operation-checklist { grid-template-columns: 1fr 1fr; }

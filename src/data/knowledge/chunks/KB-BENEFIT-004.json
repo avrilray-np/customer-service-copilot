@@ -1,0 +1,71 @@
+[
+  {
+    "chunk_id": "KB-BENEFIT-004#qualification-dispute-review",
+    "document_id": "KB-BENEFIT-004",
+    "section_path": [
+      "资格争议",
+      "人工审核"
+    ],
+    "text": "用户不符合原活动资格但明确争议活动页面的资格提示时，应由一线核验页面展示情况、订单信息和既往补偿记录。AI只能整理依据并建议核验。",
+    "keywords": [
+      "规则没写清楚",
+      "资格提示",
+      "活动争议",
+      "人工审核"
+    ],
+    "issue_subtypes": [
+      "complaint",
+      "reissue"
+    ],
+    "rule_key": "benefit.dispute.review",
+    "decision_value": "tier1_review_required",
+    "priority": 100,
+    "checksum": "sha256:58b531df8d17c87b0cb8925b1b71839a999ec444c9947f1dbd7bb65248c344c2"
+  },
+  {
+    "chunk_id": "KB-BENEFIT-004#noncash-compensation",
+    "document_id": "KB-BENEFIT-004",
+    "section_path": [
+      "争议补偿",
+      "一次性非现金权益"
+    ],
+    "text": "资格提示存在明确争议且满足人工审核条件时，一线可以决定一次性非现金权益补偿。该补偿不改变原活动资格，也不得由AI承诺或自动执行。",
+    "keywords": [
+      "争议补偿",
+      "一次性补偿",
+      "非现金权益",
+      "人工决定"
+    ],
+    "issue_subtypes": [
+      "reissue",
+      "complaint"
+    ],
+    "rule_key": "benefit.dispute.compensation",
+    "decision_value": "manual_noncash_compensation_possible",
+    "priority": 100,
+    "checksum": "sha256:07d2ad2cb7b0ee54f5ff924ffd931aec56ed8277628528d6ba12fb01a82eccc1"
+  },
+  {
+    "chunk_id": "KB-BENEFIT-004#compensation-missing-information",
+    "document_id": "KB-BENEFIT-004",
+    "section_path": [
+      "资格争议",
+      "必要信息"
+    ],
+    "text": "争议补偿审核至少需要活动页面资格提示展示情况和一线审核结果。信息不完整时只能记录缺口并转人工，不能判定补偿成立。",
+    "keywords": [
+      "信息缺口",
+      "页面展示",
+      "补偿审核结果",
+      "不能直接判定"
+    ],
+    "issue_subtypes": [
+      "reissue",
+      "complaint"
+    ],
+    "rule_key": "benefit.dispute.required_evidence",
+    "decision_value": "page_and_review_evidence_required",
+    "priority": 90,
+    "checksum": "sha256:635471c050a9e7bbe16406448d4cb04ecd68e1c2725f2549c0874f38c746f83f"
+  }
+]

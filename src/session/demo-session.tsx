@@ -3,15 +3,17 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, type ReactNode } from "react";
 import type { AiAnalysisCandidate, AiMode } from "@/ai/types";
 import type { Ticket } from "@/domain/ticket/types";
+import type { RetrievalTrace } from "@/rag/types";
 import { transitionTicket } from "@/domain/workflow/ticket-state-machine";
-import { caseTwoEscalatedCandidate, caseTwoFollowUp } from "@/data/demos/case-two";
+import { caseTwoFollowUp } from "@/data/demos/case-two";
 import { isAiCandidate } from "@/validation/ai-candidate-validator";
+import { isRetrievalTrace } from "@/rag/retrieval-trace-validator";
 
 export type DemoCase = "case-one" | "case-two" | "case-three";
 type SessionAction =
   | { type: "ai_completed" } | { type: "confirm_resolved" } | { type: "request_human" }
   | { type: "follow_up_started" } | { type: "follow_up_failed"; error: string }
-  | { type: "add_case_two_request"; candidate: AiAnalysisCandidate; source: AiMode }
+  | { type: "add_case_two_request"; candidate: AiAnalysisCandidate; source: AiMode; trace: RetrievalTrace }
   | { type: "complete_reissue" } | { type: "notify_department" } | { type: "close_tier1" }
   | { type: "complete_refund" } | { type: "register_report" } | { type: "transfer_department" } | { type: "close_tier2" }
   | { type: "open_ticket" } | { type: "back_to_list" } | { type: "reset" };
@@ -20,6 +22,7 @@ export type ServiceView = "live" | "list" | "detail";
 export interface DemoTimelineEvent { id: string; label: string; actor: string; occurredAt: string; }
 interface SessionState {
   ticket: Ticket; runId: number; serviceView: ServiceView; timeline: DemoTimelineEvent[]; hasFollowUp: boolean;
+  retrievalTrace: RetrievalTrace;
   followUpSubmitted: boolean; followUpAnalyzing: boolean; followUpError: string | null; followUpNotice: string | null;
 }
 interface SessionContextValue extends Omit<SessionState, "runId"> {
@@ -44,9 +47,9 @@ function createProcessingTicket(ticket: Ticket): Ticket {
   return { ...ticket, workflow: { ...ticket.workflow, ticket_status: "ai_processing", current_owner: "ai", user_resolution_confirmation: "pending" }, resolution: { action_result: null, summary: null, closed_by: null, closed_at: null } };
 }
 
-export function DemoSessionProvider({ initialTicket, demoCase, aiMode = "mock", processingDelayMs = 900, processingPaused = false, children }: { initialTicket: Ticket; demoCase: DemoCase; aiMode?: AiMode; processingDelayMs?: number; processingPaused?: boolean; children: ReactNode }) {
+export function DemoSessionProvider({ initialTicket, initialRetrievalTrace, caseTwoFollowUpCandidate, caseTwoFollowUpTrace, demoCase, aiMode = "mock", processingDelayMs = 900, processingPaused = false, children }: { initialTicket: Ticket; initialRetrievalTrace: RetrievalTrace; caseTwoFollowUpCandidate: AiAnalysisCandidate; caseTwoFollowUpTrace: RetrievalTrace; demoCase: DemoCase; aiMode?: AiMode; processingDelayMs?: number; processingPaused?: boolean; children: ReactNode }) {
   const [state, dispatch] = useReducer((current: SessionState, action: SessionAction): SessionState => {
-    if (action.type === "reset") return { ticket: createProcessingTicket(initialTicket), runId: current.runId + 1, serviceView: "live", timeline: initialTimeline(demoCase), hasFollowUp: false, followUpSubmitted: false, followUpAnalyzing: false, followUpError: null, followUpNotice: null };
+    if (action.type === "reset") return { ticket: createProcessingTicket(initialTicket), retrievalTrace: initialRetrievalTrace, runId: current.runId + 1, serviceView: "live", timeline: initialTimeline(demoCase), hasFollowUp: false, followUpSubmitted: false, followUpAnalyzing: false, followUpError: null, followUpNotice: null };
     if (action.type === "ai_completed") {
       if (current.ticket.workflow.ticket_status !== "ai_processing") return current;
       return { ...current, ticket: initialTicket, serviceView: demoCase === "case-three" ? "list" : "live", timeline: [...current.timeline, { id: "ai-completed", label: demoCase === "case-two" ? "AI完成活动资格查询，等待用户反馈" : demoCase === "case-three" ? "AI识别高风险诉求并直接派至二线" : "AI完成分析，等待用户确认", actor: "AI客服", occurredAt: initialTicket.updated_at ?? initialTicket.created_at }] };
@@ -63,7 +66,7 @@ export function DemoSessionProvider({ initialTicket, demoCase, aiMode = "mock", 
     if (action.type === "follow_up_failed") return { ...current, followUpAnalyzing: false, followUpError: action.error };
     if (action.type === "add_case_two_request") {
       const occurredAt = now();
-      return { ...current, ticket: transitionTicket(current.ticket, { type: "USER_ADDED_REISSUE_COMPLAINT", occurredAt, message: caseTwoFollowUp, candidate: action.candidate }), serviceView: "list", hasFollowUp: true, followUpAnalyzing: false, followUpError: null, followUpNotice: action.source === "mock" && aiMode !== "mock" ? "AI分析失败后，本轮追加诉求已由你明确选择使用Mock结果继续。" : null, timeline: [...current.timeline, { id: "follow-up", label: "用户追加补发与投诉诉求", actor: "用户", occurredAt }, { id: "reclassified", label: "AI重新分类为低风险其他类", actor: "AI客服", occurredAt }, { id: "tier1-benefit-assigned", label: "系统派单至一线客服", actor: "工单系统", occurredAt }] };
+      return { ...current, ticket: transitionTicket(current.ticket, { type: "USER_ADDED_REISSUE_COMPLAINT", occurredAt, message: caseTwoFollowUp, candidate: action.candidate }), retrievalTrace: action.trace, serviceView: "list", hasFollowUp: true, followUpAnalyzing: false, followUpError: null, followUpNotice: action.source === "mock" && aiMode !== "mock" ? "AI分析失败后，本轮追加诉求已由你明确选择使用Mock结果继续。" : null, timeline: [...current.timeline, { id: "follow-up", label: "用户追加补发与投诉诉求", actor: "用户", occurredAt }, { id: "reclassified", label: "AI重新分类为低风险其他类", actor: "AI客服", occurredAt }, { id: "tier1-benefit-assigned", label: "系统派单至一线客服", actor: "工单系统", occurredAt }] };
     }
     if (action.type === "complete_reissue") {
       const occurredAt = now();
@@ -96,7 +99,7 @@ export function DemoSessionProvider({ initialTicket, demoCase, aiMode = "mock", 
     if (action.type === "open_ticket") return { ...current, serviceView: "detail" };
     if (action.type === "back_to_list") return { ...current, serviceView: "list" };
     return current;
-  }, { ticket: createProcessingTicket(initialTicket), runId: 0, serviceView: "live", timeline: initialTimeline(demoCase), hasFollowUp: false, followUpSubmitted: false, followUpAnalyzing: false, followUpError: null, followUpNotice: null });
+  }, { ticket: createProcessingTicket(initialTicket), retrievalTrace: initialRetrievalTrace, runId: 0, serviceView: "live", timeline: initialTimeline(demoCase), hasFollowUp: false, followUpSubmitted: false, followUpAnalyzing: false, followUpError: null, followUpNotice: null });
 
   useEffect(() => {
     if (processingPaused || state.ticket.workflow.ticket_status !== "ai_processing") return;
@@ -107,7 +110,7 @@ export function DemoSessionProvider({ initialTicket, demoCase, aiMode = "mock", 
   const analyzeCaseTwoFollowUp = useCallback(async (forceMock: boolean) => {
     dispatch({ type: "follow_up_started" });
     if (forceMock || aiMode === "mock") {
-      dispatch({ type: "add_case_two_request", candidate: caseTwoEscalatedCandidate, source: "mock" });
+      dispatch({ type: "add_case_two_request", candidate: caseTwoFollowUpCandidate, source: "mock", trace: caseTwoFollowUpTrace });
       return;
     }
 
@@ -123,20 +126,22 @@ export function DemoSessionProvider({ initialTicket, demoCase, aiMode = "mock", 
       }
       const candidate = result && typeof result === "object" && "candidate" in result ? result.candidate : null;
       if (!isAiCandidate(candidate)) throw new Error("服务端返回的AI结果不符合工单契约。");
+      const trace = result && typeof result === "object" && "retrieval_trace" in result ? result.retrieval_trace : null;
+      if (!isRetrievalTrace(trace)) throw new Error("服务端返回的检索轨迹不符合契约。");
       const source = result && typeof result === "object" && "mode" in result && (result.mode === "gemini" || result.mode === "deepseek") ? result.mode : aiMode;
-      dispatch({ type: "add_case_two_request", candidate, source });
+      dispatch({ type: "add_case_two_request", candidate, source, trace });
     } catch (error) {
       dispatch({ type: "follow_up_failed", error: error instanceof Error ? error.message : "AI暂时无法分析追加诉求，请稍后重试。" });
     }
-  }, [aiMode]);
+  }, [aiMode, caseTwoFollowUpCandidate, caseTwoFollowUpTrace]);
 
   const value = useMemo<SessionContextValue>(() => ({
-    ticket: state.ticket, initialTicket, demoCase, serviceView: state.serviceView, timeline: state.timeline, hasFollowUp: state.hasFollowUp, followUpSubmitted: state.followUpSubmitted, followUpAnalyzing: state.followUpAnalyzing, followUpError: state.followUpError, followUpNotice: state.followUpNotice,
+    ticket: state.ticket, retrievalTrace: state.retrievalTrace, initialTicket, demoCase, serviceView: state.serviceView, timeline: state.timeline, hasFollowUp: state.hasFollowUp, followUpSubmitted: state.followUpSubmitted, followUpAnalyzing: state.followUpAnalyzing, followUpError: state.followUpError, followUpNotice: state.followUpNotice,
     confirmResolved: () => dispatch({ type: "confirm_resolved" }), requestHuman: () => dispatch({ type: "request_human" }), addCaseTwoRequest: () => analyzeCaseTwoFollowUp(false), continueFollowUpWithMock: () => analyzeCaseTwoFollowUp(true),
     completeReissue: () => dispatch({ type: "complete_reissue" }), notifyDepartment: () => dispatch({ type: "notify_department" }), closeTier1: () => dispatch({ type: "close_tier1" }),
     completeRefund: () => dispatch({ type: "complete_refund" }), registerReport: () => dispatch({ type: "register_report" }), transferDepartment: () => dispatch({ type: "transfer_department" }), closeTier2: () => dispatch({ type: "close_tier2" }),
     openTicket: () => dispatch({ type: "open_ticket" }), backToList: () => dispatch({ type: "back_to_list" }), reset: () => dispatch({ type: "reset" }),
-  }), [analyzeCaseTwoFollowUp, demoCase, initialTicket, state.followUpAnalyzing, state.followUpError, state.followUpNotice, state.followUpSubmitted, state.hasFollowUp, state.serviceView, state.ticket, state.timeline]);
+  }), [analyzeCaseTwoFollowUp, demoCase, initialTicket, state.followUpAnalyzing, state.followUpError, state.followUpNotice, state.followUpSubmitted, state.hasFollowUp, state.retrievalTrace, state.serviceView, state.ticket, state.timeline]);
   return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>;
 }
 

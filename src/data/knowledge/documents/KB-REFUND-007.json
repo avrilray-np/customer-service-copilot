@@ -1,0 +1,15 @@
+{
+  "document_id": "KB-REFUND-007",
+  "title": "会员扣费争议与退款审核规则",
+  "version": "2026.10",
+  "status": "active",
+  "language": "zh-CN",
+  "effective_from": "2026-10-01T00:00:00+08:00",
+  "effective_to": null,
+  "supersedes_document_id": null,
+  "business_domains": ["payment", "refund"],
+  "applicable_products": ["all"],
+  "audiences": ["ai", "tier1", "tier2"],
+  "source_owner": "支付与风控部",
+  "updated_at": "2026-10-01T00:00:00+08:00"
+}

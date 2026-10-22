@@ -1,0 +1,92 @@
+[
+  {
+    "chunk_id": "KB-REFUND-007#refund-tier2",
+    "document_id": "KB-REFUND-007",
+    "section_path": [
+      "退款",
+      "二线审核"
+    ],
+    "text": "用户明确要求退回会员费、扣款或赔偿资金损失时，属于高风险资金诉求，必须进入二线客服审核。AI不得承诺退款成功。",
+    "keywords": [
+      "马上退款",
+      "退会员费",
+      "赔偿损失",
+      "二线审核"
+    ],
+    "issue_subtypes": [
+      "refund"
+    ],
+    "rule_key": "refund.routing.tier2",
+    "decision_value": "tier2_review_required",
+    "priority": 100,
+    "checksum": "sha256:4dd2e7733c3dc41bf574a9ab39569e9d711eb9f85ea51450ae6ace40556eab79"
+  },
+  {
+    "chunk_id": "KB-REFUND-007#post-cancellation-charge",
+    "document_id": "KB-REFUND-007",
+    "section_path": [
+      "扣费争议",
+      "取消续订后扣费"
+    ],
+    "text": "用户称取消自动续订后仍被扣费时，须核对取消申请时间、渠道生效回执、扣费时间、金额和支付渠道最终状态，再由授权人员处理。",
+    "keywords": [
+      "取消后仍扣费",
+      "异常扣款",
+      "渠道回执",
+      "扣费时间"
+    ],
+    "issue_subtypes": [
+      "refund",
+      "renewal_query"
+    ],
+    "rule_key": "refund.post_cancel_charge.evidence",
+    "decision_value": "payment_evidence_required",
+    "priority": 100,
+    "checksum": "sha256:906a973a7405fb3470b8acaff324bea237c1caeadc648743910b072ce39f4623"
+  },
+  {
+    "chunk_id": "KB-REFUND-007#refund-identity",
+    "document_id": "KB-REFUND-007",
+    "section_path": [
+      "退款",
+      "身份与交易核验"
+    ],
+    "text": "退款处理前必须核验用户身份、交易对象和支付记录。即使用户只说我要退，也应进入二线澄清退款对象并完成身份核验。",
+    "keywords": [
+      "我要退",
+      "退款对象",
+      "身份核验",
+      "交易记录"
+    ],
+    "issue_subtypes": [
+      "refund"
+    ],
+    "rule_key": "refund.identity.transaction",
+    "decision_value": "identity_and_transaction_required",
+    "priority": 95,
+    "checksum": "sha256:207d8f8e234030a13f45411c99f97e52f066cf8bb3625425c0686640bf69824c"
+  },
+  {
+    "chunk_id": "KB-REFUND-007#refund-with-reissue",
+    "document_id": "KB-REFUND-007",
+    "section_path": [
+      "复合诉求",
+      "补发与退款"
+    ],
+    "text": "同一诉求同时包含优惠券补发和资金退款时，按最高风险进入二线处理，不得因为补发属于低风险操作而留在一线。",
+    "keywords": [
+      "补不了就退款",
+      "补发加退款",
+      "最高风险",
+      "二线"
+    ],
+    "issue_subtypes": [
+      "reissue",
+      "refund"
+    ],
+    "rule_key": "refund.mixed_request.routing",
+    "decision_value": "highest_risk_tier2",
+    "priority": 100,
+    "checksum": "sha256:30af113c3b12f65164227655fcba7df98c52ca5dfc4a2bd7356c3a94ebc73052"
+  }
+]

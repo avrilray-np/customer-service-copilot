@@ -18,7 +18,7 @@ test("case one closes only after explicit user confirmation", async ({ page }) =
   await expect(page.getByRole("button", { name: "查看回答依据" })).toBeVisible();
   await expect(page.getByTestId("ticket-status")).toContainText("等待用户确认");
   await page.getByRole("button", { name: "查看回答依据" }).click();
-  await expect(page.getByLabel("用户端").getByText("会员自动续订与退订规则", { exact: true })).toBeVisible();
+  await expect(page.getByLabel("用户端").getByText("会员自动续订与退订规则", { exact: true }).first()).toBeVisible();
   await page.getByRole("button", { name: "已解决" }).click();
   await expect(page.getByLabel("工单列表页")).toBeVisible();
   await expect(page.getByTestId("ticket-status")).toContainText("已完结");

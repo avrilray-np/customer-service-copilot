@@ -1,0 +1,69 @@
+[
+  {
+    "chunk_id": "KB-COMPLAINT-006#complaint-registration",
+    "document_id": "KB-COMPLAINT-006",
+    "section_path": [
+      "投诉",
+      "登记与回复"
+    ],
+    "text": "用户明确投诉服务、规则或活动提示时，应由一线登记投诉、回复用户并按问题对象通知对应业务部门。AI不得把负面表达自动判定为已登记投诉。",
+    "keywords": [
+      "我要投诉",
+      "投诉规则",
+      "服务态度",
+      "登记投诉"
+    ],
+    "issue_subtypes": [
+      "complaint"
+    ],
+    "rule_key": "complaint.registration",
+    "decision_value": "tier1_register_and_notify",
+    "priority": 100,
+    "checksum": "sha256:8cf2d68689925a530be0a8b51f996c107db1b3e18eb08041975ee1afc03dcbc7"
+  },
+  {
+    "chunk_id": "KB-COMPLAINT-006#suggestion-notification",
+    "document_id": "KB-COMPLAINT-006",
+    "section_path": [
+      "建议",
+      "部门通知"
+    ],
+    "text": "产品功能、页面体验或提醒能力等建议由一线记录并通知产品部门。建议类诉求不应由AI自动关闭为已采纳。",
+    "keywords": [
+      "产品建议",
+      "页面难用",
+      "增加提醒",
+      "通知产品部门"
+    ],
+    "issue_subtypes": [
+      "suggestion"
+    ],
+    "rule_key": "suggestion.department_notification",
+    "decision_value": "tier1_notify_product",
+    "priority": 90,
+    "checksum": "sha256:c9fd8452a4d052510548a13d60b42471018f04b121e3ac5645cc5a0127eecdec"
+  },
+  {
+    "chunk_id": "KB-COMPLAINT-006#department-routing",
+    "document_id": "KB-COMPLAINT-006",
+    "section_path": [
+      "部门通知",
+      "对象选择"
+    ],
+    "text": "活动资格和展示问题通知活动策划部，客服服务问题通知客服管理部门，产品体验建议通知产品部门。通知结果需要写入工单。",
+    "keywords": [
+      "活动策划部",
+      "客服管理部门",
+      "产品部门",
+      "通知状态"
+    ],
+    "issue_subtypes": [
+      "complaint",
+      "suggestion"
+    ],
+    "rule_key": "complaint.department.routing",
+    "decision_value": "route_by_subject",
+    "priority": 85,
+    "checksum": "sha256:bb1868c3a776692a21b87fed0096dac0df8cb826179c1b39810394329984a3e0"
+  }
+]

@@ -5,6 +5,25 @@ import { caseOneInput } from "@/data/demos/case-one";
 import { caseTwoInput } from "@/data/demos/case-two";
 import { caseThreeInput } from "@/data/demos/case-three";
 
+const caseOneRagInput = {
+  ...caseOneInput,
+  retrieval_status: "available" as const,
+  knowledge_base_version: "kb-test",
+  knowledge_sources: [{ chunk_id: "KB-MEMBER-001#cancel-current-entitlement", document_id: "KB-MEMBER-001", title: "会员自动续订与退订规则", section: "当前周期权益", version: "2026.09", quote: "取消续订不影响当前权益。" }],
+};
+const caseTwoRagInput = {
+  ...caseTwoInput,
+  retrieval_status: "available" as const,
+  knowledge_base_version: "kb-test",
+  knowledge_sources: [{ chunk_id: "KB-BENEFIT-003#eligible-products-current", document_id: "KB-BENEFIT-003", title: "活动资格规则", section: "适用产品", version: "2026.09", quote: "普通月卡不符合原活动资格。" }],
+};
+const caseThreeRagInput = {
+  ...caseThreeInput,
+  retrieval_status: "available" as const,
+  knowledge_base_version: "kb-test",
+  knowledge_sources: [{ chunk_id: "KB-REFUND-007#refund-tier2", document_id: "KB-REFUND-007", title: "退款规则", section: "二线审核", version: "2026.09", quote: "退款必须由二线审核。" }],
+};
+
 function structuredResult(overrides: Record<string, unknown> = {}) {
   return {
     summary: "用户已取消自动续订，咨询会员有效期和后续扣费。",
@@ -16,7 +35,7 @@ function structuredResult(overrides: Record<string, unknown> = {}) {
     reply: "当前会员有效，自动续订已取消，到期后不会继续扣费。",
     evidence_status: "sufficient",
     recommended_action: "reply",
-    knowledge_source_ids: ["KB-MEMBER-001"],
+    knowledge_chunk_ids: ["KB-MEMBER-001#cancel-current-entitlement"],
     user_data_source_names: ["demo_membership_service"],
     missing_information: [],
     ...overrides,
@@ -35,9 +54,15 @@ describe("DeepSeekAiProvider", () => {
     const fetcher = vi.fn().mockResolvedValue(deepSeekResponse(structuredResult()));
     const provider = new DeepSeekAiProvider({ apiKey: "test-only-key", model: "deepseek-test", fetcher });
 
-    const candidate = await provider.analyze(caseOneInput);
+    const candidate = await provider.analyze(caseOneRagInput);
 
-    expect(candidate.knowledge_sources).toEqual(caseOneInput.knowledge_sources);
+    expect(candidate.knowledge_sources).toEqual(caseOneRagInput.knowledge_sources.map((source) => ({
+      document_id: source.document_id,
+      title: source.title,
+      section: source.section,
+      version: source.version,
+      quote: source.quote,
+    })));
     expect(candidate.user_data_sources).toEqual(caseOneInput.user_data_sources);
     expect(candidate.recommended_action).toBe("reply");
     expect(fetcher).toHaveBeenCalledOnce();
@@ -62,26 +87,26 @@ describe("DeepSeekAiProvider", () => {
     }), { status: 200 });
     const provider = new DeepSeekAiProvider({ apiKey: "test-only-key", fetcher: vi.fn().mockResolvedValue(response) });
 
-    await expect(provider.analyze(caseOneInput)).resolves.toMatchObject({ handling_category: "low_risk_info" });
+    await expect(provider.analyze(caseOneRagInput)).resolves.toMatchObject({ handling_category: "low_risk_info" });
   });
 
   it("rejects a source id that the application did not supply", async () => {
-    const fetcher = vi.fn().mockResolvedValue(deepSeekResponse(structuredResult({ knowledge_source_ids: ["KB-FABRICATED-999"] })));
+    const fetcher = vi.fn().mockResolvedValue(deepSeekResponse(structuredResult({ knowledge_chunk_ids: ["KB-FABRICATED-999#fake"] })));
     const provider = new DeepSeekAiProvider({ apiKey: "test-only-key", fetcher });
 
-    await expect(provider.analyze(caseOneInput)).rejects.toMatchObject({ code: "invalid_response" });
+    await expect(provider.analyze(caseOneRagInput)).rejects.toMatchObject({ code: "invalid_response" });
   });
 
   it("applies the tier2 guard without overwriting a valid evidence status", async () => {
     const result = structuredResult({
       summary: "用户咨询扣费。",
       subtypes: ["renewal_query"],
-      knowledge_source_ids: ["KB-REFUND-007"],
+      knowledge_chunk_ids: ["KB-REFUND-007#refund-tier2"],
       user_data_source_names: ["demo_payment_service"],
     });
     const provider = new DeepSeekAiProvider({ apiKey: "test-only-key", fetcher: vi.fn().mockResolvedValue(deepSeekResponse(result)) });
 
-    await expect(provider.analyze(caseThreeInput)).resolves.toMatchObject({
+    await expect(provider.analyze(caseThreeRagInput)).resolves.toMatchObject({
       handling_category: "high_risk",
       risk_level: "high",
       recommended_action: "assign_tier2",
@@ -98,13 +123,13 @@ describe("DeepSeekAiProvider", () => {
       risk_reason: "需要一线人工核验争议补偿条件并登记投诉。",
       reply,
       recommended_action: "assign_tier1",
-      knowledge_source_ids: ["KB-BENEFIT-003"],
+      knowledge_chunk_ids: ["KB-BENEFIT-003#eligible-products-current"],
       user_data_source_names: ["demo_benefit_service"],
       missing_information: ["活动页面资格提示展示情况"],
     });
     const provider = new DeepSeekAiProvider({ apiKey: "test-only-key", fetcher: vi.fn().mockResolvedValue(deepSeekResponse(result)) });
 
-    await expect(provider.analyze({ ...caseTwoInput, message: `${caseTwoInput.message}\n用户追加诉求：帮我补发优惠券，我还要投诉活动规则不清楚。` })).resolves.toMatchObject({
+    await expect(provider.analyze({ ...caseTwoRagInput, message: `${caseTwoInput.message}\n用户追加诉求：帮我补发优惠券，我还要投诉活动规则不清楚。` })).resolves.toMatchObject({
       reply,
       handling_category: "low_risk_other",
       recommended_action: "assign_tier1",
@@ -116,7 +141,7 @@ describe("DeepSeekAiProvider", () => {
     const fetcher = vi.fn().mockResolvedValue(response);
     const provider = new DeepSeekAiProvider({ apiKey: "test-only-key", fetcher });
 
-    await expect(provider.analyze(caseOneInput)).rejects.toMatchObject({
+    await expect(provider.analyze(caseOneRagInput)).rejects.toMatchObject({
       code: "request_failed",
       message: expect.stringContaining("insufficient_balance"),
     });
@@ -127,7 +152,7 @@ describe("DeepSeekAiProvider", () => {
     const fetcher = vi.fn().mockImplementation(() => Promise.resolve(new Response(JSON.stringify({ status: "completed", output: [] }), { status: 200 })));
     const provider = new DeepSeekAiProvider({ apiKey: "test-only-key", fetcher });
 
-    await expect(provider.analyze(caseOneInput)).rejects.toMatchObject({ code: "empty_response" });
+    await expect(provider.analyze(caseOneRagInput)).rejects.toMatchObject({ code: "empty_response" });
     expect(fetcher).toHaveBeenCalledTimes(2);
   });
 
@@ -137,7 +162,7 @@ describe("DeepSeekAiProvider", () => {
     const fetcher = vi.fn().mockResolvedValueOnce(unsafe).mockResolvedValueOnce(safe);
     const provider = new DeepSeekAiProvider({ apiKey: "test-only-key", fetcher });
 
-    await expect(provider.analyze(caseOneInput)).resolves.toMatchObject({ reply: "查询结果显示自动续订状态为已取消。" });
+    await expect(provider.analyze(caseOneRagInput)).resolves.toMatchObject({ reply: "查询结果显示自动续订状态为已取消。" });
     expect(fetcher).toHaveBeenCalledTimes(2);
   });
 

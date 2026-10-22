@@ -1,0 +1,93 @@
+[
+  {
+    "chunk_id": "KB-MEMBER-001#cancel-current-entitlement",
+    "document_id": "KB-MEMBER-001",
+    "section_path": [
+      "取消自动续订",
+      "当前周期权益"
+    ],
+    "text": "取消自动续订只停止下一周期续费，不会提前终止当前已支付周期内的会员权益。当前会员仍可使用至权益到期时间。",
+    "keywords": [
+      "取消续订",
+      "关闭连续包月",
+      "会员仍有效",
+      "当前权益"
+    ],
+    "issue_subtypes": [
+      "renewal_query",
+      "membership_query",
+      "unsubscribe"
+    ],
+    "rule_key": "renewal.cancel.current_entitlement",
+    "decision_value": "entitlement_remains_until_expiry",
+    "priority": 100,
+    "checksum": "sha256:b0d7e19c861ff2a4111a582bf1b8064d7a4ef4abb24b650923755624af4e28e2"
+  },
+  {
+    "chunk_id": "KB-MEMBER-001#cancel-next-charge",
+    "document_id": "KB-MEMBER-001",
+    "section_path": [
+      "取消自动续订",
+      "下一周期扣费"
+    ],
+    "text": "自动续订状态已成功取消且没有新的订购操作时，系统不应在下一周期继续自动扣费。具体状态需结合用户续订记录查询。",
+    "keywords": [
+      "下个月还扣钱",
+      "停止自动扣费",
+      "续订状态",
+      "取消成功"
+    ],
+    "issue_subtypes": [
+      "renewal_query",
+      "operation_status_query"
+    ],
+    "rule_key": "renewal.cancel.next_charge",
+    "decision_value": "no_next_cycle_auto_charge",
+    "priority": 95,
+    "checksum": "sha256:70d75ed3318dc937002d709db82702f1b79d38d2731d4424ca4d07c07c295db3"
+  },
+  {
+    "chunk_id": "KB-MEMBER-001#unsubscribe-human-action",
+    "document_id": "KB-MEMBER-001",
+    "section_path": [
+      "退订操作",
+      "人工确认"
+    ],
+    "text": "用户明确要求关闭连续包月或取消下期续费时，属于业务写操作，必须转一线客服确认并模拟执行；AI只能说明规则和记录诉求。",
+    "keywords": [
+      "帮我退订",
+      "关闭续费",
+      "取消下期续费",
+      "人工操作"
+    ],
+    "issue_subtypes": [
+      "unsubscribe"
+    ],
+    "rule_key": "renewal.unsubscribe.execution",
+    "decision_value": "tier1_confirmation_required",
+    "priority": 100,
+    "checksum": "sha256:df17eccd2af7d1ef05e42106a3f905eddc936d39d667cdce477d8d7b22d629f3"
+  },
+  {
+    "chunk_id": "KB-MEMBER-001#cancel-not-refund",
+    "document_id": "KB-MEMBER-001",
+    "section_path": [
+      "取消自动续订",
+      "与退款的区别"
+    ],
+    "text": "取消自动续订不等同于申请退款。用户只要求停止下一期续费时，不应推断其要求退回本期已支付费用。",
+    "keywords": [
+      "只取消续费",
+      "不要退本月",
+      "退订不是退款"
+    ],
+    "issue_subtypes": [
+      "unsubscribe",
+      "refund"
+    ],
+    "rule_key": "renewal.cancel.refund_boundary",
+    "decision_value": "cancellation_does_not_imply_refund",
+    "priority": 95,
+    "checksum": "sha256:ae6dea7c02b55b627e18c88aaa9150ba263b82d4428f3cdfc44ed5a50045292d"
+  }
+]

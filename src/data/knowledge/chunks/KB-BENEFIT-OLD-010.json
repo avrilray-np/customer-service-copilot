@@ -1,0 +1,44 @@
+[
+  {
+    "chunk_id": "KB-BENEFIT-OLD-010#ordinary-card-eligible",
+    "document_id": "KB-BENEFIT-OLD-010",
+    "section_path": [
+      "旧活动资格",
+      "普通月卡"
+    ],
+    "text": "旧版活动曾允许普通月卡参与赠券，该规则已于2025年12月31日结束，不得用于当前活动判断。",
+    "keywords": [
+      "普通月卡有资格",
+      "旧活动",
+      "已过期"
+    ],
+    "issue_subtypes": [
+      "policy_query"
+    ],
+    "rule_key": "benefit.campaign.eligible_products",
+    "decision_value": "ordinary_monthly_card_eligible",
+    "priority": 10,
+    "checksum": "sha256:6d147d556b3d7a4a7a8c21479173f8145dbfc884e5fe308924e599ff20112a6c"
+  },
+  {
+    "chunk_id": "KB-BENEFIT-OLD-010#old-delivery-window",
+    "document_id": "KB-BENEFIT-OLD-010",
+    "section_path": [
+      "旧活动发放",
+      "到账时间"
+    ],
+    "text": "旧版普通月卡赠券在支付后即时到账，该发放方式已经随旧活动下线，不适用于当前规则。",
+    "keywords": [
+      "即时到账",
+      "旧版赠券",
+      "普通月卡"
+    ],
+    "issue_subtypes": [
+      "operation_status_query"
+    ],
+    "rule_key": "benefit.campaign.delivery_window",
+    "decision_value": "instant_delivery",
+    "priority": 10,
+    "checksum": "sha256:fe3028a1700a24a77657b4a9ab0acfe1d6875442d12e966290ff3b1b288dc2fd"
+  }
+]

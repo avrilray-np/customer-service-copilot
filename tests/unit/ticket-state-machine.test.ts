@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { mockAiProvider } from "@/ai/mock-ai-provider";
 import { caseOneInput } from "@/data/demos/case-one";
-import { caseTwoEscalatedCandidate, caseTwoFollowUp, caseTwoInput } from "@/data/demos/case-two";
+import { caseTwoFollowUp } from "@/data/demos/case-two";
 import { caseThreeInput } from "@/data/demos/case-three";
 import { createCaseThreeTicket, createCaseTwoWaitingTicket, createWaitingTicket } from "@/domain/ticket/create-ticket";
 import { transitionTicket } from "@/domain/workflow/ticket-state-machine";
+import { mockCandidateFor, mockDemoData } from "../helpers/mock-rag";
 
 async function ticketFixture() {
-  return createWaitingTicket(await mockAiProvider.analyze(caseOneInput));
+  return createWaitingTicket((await mockCandidateFor(caseOneInput)).candidate);
 }
 
 describe("ticket state machine", () => {
@@ -42,8 +42,9 @@ describe("ticket state machine", () => {
   });
 
   it("reclassifies and assigns tier1 only after an explicit reissue and complaint request", async () => {
-    const initial = createCaseTwoWaitingTicket(await mockAiProvider.analyze(caseTwoInput));
-    const result = transitionTicket(initial, { type: "USER_ADDED_REISSUE_COMPLAINT", occurredAt: "2026-09-01T10:16:00+08:00", message: caseTwoFollowUp, candidate: caseTwoEscalatedCandidate });
+    const data = await mockDemoData();
+    const initial = createCaseTwoWaitingTicket(data.caseTwo.candidate);
+    const result = transitionTicket(initial, { type: "USER_ADDED_REISSUE_COMPLAINT", occurredAt: "2026-09-01T10:16:00+08:00", message: caseTwoFollowUp, candidate: data.caseTwoFollowUp.candidate });
     expect(result.issue.handling_category).toBe("low_risk_other");
     expect(result.issue.subtypes).toEqual(["reissue", "complaint"]);
     expect(result.workflow.assigned_to).toBe("tier1-benefit-queue");
@@ -51,8 +52,9 @@ describe("ticket state machine", () => {
   });
 
   it("requires both tier1 operations before closing case two", async () => {
-    const initial = createCaseTwoWaitingTicket(await mockAiProvider.analyze(caseTwoInput));
-    const routed = transitionTicket(initial, { type: "USER_ADDED_REISSUE_COMPLAINT", occurredAt: "2026-09-01T10:16:00+08:00", message: caseTwoFollowUp, candidate: caseTwoEscalatedCandidate });
+    const data = await mockDemoData();
+    const initial = createCaseTwoWaitingTicket(data.caseTwo.candidate);
+    const routed = transitionTicket(initial, { type: "USER_ADDED_REISSUE_COMPLAINT", occurredAt: "2026-09-01T10:16:00+08:00", message: caseTwoFollowUp, candidate: data.caseTwoFollowUp.candidate });
     expect(() => transitionTicket(routed, { type: "TIER1_CLOSED", occurredAt: "2026-09-01T10:20:00+08:00" })).toThrow("完成模拟补发并通知相关部门后才能完结");
     const reissued = transitionTicket(routed, { type: "TIER1_REISSUE_COMPLETED", occurredAt: "2026-09-01T10:18:00+08:00" });
     expect(() => transitionTicket(reissued, { type: "TIER1_CLOSED", occurredAt: "2026-09-01T10:20:00+08:00" })).toThrow("完成模拟补发并通知相关部门后才能完结");
@@ -63,8 +65,9 @@ describe("ticket state machine", () => {
   });
 
   it("supports notifying the department before completing the simulated reissue", async () => {
-    const initial = createCaseTwoWaitingTicket(await mockAiProvider.analyze(caseTwoInput));
-    const routed = transitionTicket(initial, { type: "USER_ADDED_REISSUE_COMPLAINT", occurredAt: "2026-09-01T10:16:00+08:00", message: caseTwoFollowUp, candidate: caseTwoEscalatedCandidate });
+    const data = await mockDemoData();
+    const initial = createCaseTwoWaitingTicket(data.caseTwo.candidate);
+    const routed = transitionTicket(initial, { type: "USER_ADDED_REISSUE_COMPLAINT", occurredAt: "2026-09-01T10:16:00+08:00", message: caseTwoFollowUp, candidate: data.caseTwoFollowUp.candidate });
     const notified = transitionTicket(routed, { type: "TIER1_DEPARTMENT_NOTIFIED", occurredAt: "2026-09-01T10:18:00+08:00" });
     const reissued = transitionTicket(notified, { type: "TIER1_REISSUE_COMPLETED", occurredAt: "2026-09-01T10:19:00+08:00" });
     const closed = transitionTicket(reissued, { type: "TIER1_CLOSED", occurredAt: "2026-09-01T10:20:00+08:00" });
@@ -73,7 +76,7 @@ describe("ticket state machine", () => {
   });
 
   it("requires both tier2 refund and report records before closure", async () => {
-    const ticket = createCaseThreeTicket(await mockAiProvider.analyze(caseThreeInput));
+    const ticket = createCaseThreeTicket((await mockCandidateFor(caseThreeInput)).candidate);
     expect(() => transitionTicket(ticket, { type: "TIER2_CLOSED", occurredAt: "2026-09-01T11:30:00+08:00" })).toThrow("完成退款核验和举报登记后才能完结");
     const refunded = transitionTicket(ticket, { type: "TIER2_REFUND_COMPLETED", occurredAt: "2026-09-01T11:25:00+08:00" });
     expect(() => transitionTicket(refunded, { type: "TIER2_CLOSED", occurredAt: "2026-09-01T11:30:00+08:00" })).toThrow("完成退款核验和举报登记后才能完结");
@@ -84,7 +87,7 @@ describe("ticket state machine", () => {
   });
 
   it("moves unresolved payment checks to department processing and blocks tier2 closure", async () => {
-    const ticket = createCaseThreeTicket(await mockAiProvider.analyze(caseThreeInput));
+    const ticket = createCaseThreeTicket((await mockCandidateFor(caseThreeInput)).candidate);
     const transferred = transitionTicket(ticket, { type: "TIER2_TRANSFERRED_DEPARTMENT", occurredAt: "2026-09-01T11:25:00+08:00" });
     expect(transferred.workflow.ticket_status).toBe("department_processing");
     expect(transferred.workflow.current_owner).toBe("department");

@@ -1,0 +1,15 @@
+{
+  "document_id": "KB-BENEFIT-OLD-010",
+  "title": "旧版普通月卡赠券活动规则",
+  "version": "2025.12",
+  "status": "retired",
+  "language": "zh-CN",
+  "effective_from": "2025-12-01T00:00:00+08:00",
+  "effective_to": "2025-12-31T23:59:59+08:00",
+  "supersedes_document_id": null,
+  "business_domains": ["benefit", "campaign"],
+  "applicable_products": ["ordinary_monthly_card"],
+  "audiences": ["ai", "tier1", "tier2"],
+  "source_owner": "活动策划部",
+  "updated_at": "2025-12-01T00:00:00+08:00"
+}

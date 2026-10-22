@@ -9,6 +9,8 @@ import { caseThreeFacts } from "@/data/demos/case-three";
 import { createCaseThreeTicket, createCaseTwoWaitingTicket, createWaitingTicket } from "@/domain/ticket/create-ticket";
 import { isAiCandidate } from "@/validation/ai-candidate-validator";
 import { isTicket } from "@/validation/ticket-validator";
+import type { RetrievalTrace } from "@/rag/types";
+import { isRetrievalTrace } from "@/rag/retrieval-trace-validator";
 
 const statusLabels: Record<Ticket["workflow"]["ticket_status"], string> = {
   ai_processing: "AI处理中",
@@ -40,8 +42,8 @@ function formatDate(value: string | null | undefined) {
   return new Intl.DateTimeFormat("zh-CN", { year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false }).format(new Date(value));
 }
 
-function createDemoTicket(demoCase: DemoCase, candidate: AiAnalysisCandidate) {
-  const options = { promptVersion: "customer-service-ai-v1.0" };
+function createDemoTicket(demoCase: DemoCase, candidate: AiAnalysisCandidate, trace: RetrievalTrace) {
+  const options = { promptVersion: "customer-service-ai-v1.0", knowledgeBaseVersion: trace.knowledge_base_version };
   const ticket = demoCase === "case-one"
     ? createWaitingTicket(candidate, options)
     : demoCase === "case-two"
@@ -70,6 +72,9 @@ export function DemoApp({
   initialTicket,
   caseTwoTicket,
   caseThreeTicket,
+  initialRetrievalTraces,
+  caseTwoFollowUpCandidate,
+  caseTwoFollowUpTrace,
   aiRuntime = { requestedMode: "mock", activeMode: "mock", model: null, warning: null },
   processingDelayMs,
   sequenceDelayMs = 2000,
@@ -77,6 +82,9 @@ export function DemoApp({
   initialTicket: Ticket;
   caseTwoTicket?: Ticket;
   caseThreeTicket?: Ticket;
+  initialRetrievalTraces: Record<DemoCase, RetrievalTrace>;
+  caseTwoFollowUpCandidate: AiAnalysisCandidate;
+  caseTwoFollowUpTrace: RetrievalTrace;
   aiRuntime?: AiRuntimeInfo;
   processingDelayMs?: number;
   sequenceDelayMs?: number;
@@ -84,6 +92,7 @@ export function DemoApp({
   const [selectedCase, setSelectedCase] = useState<DemoCase>("case-one");
   const [displayMode, setDisplayMode] = useState<DisplayMode>("mock");
   const [aiTickets, setAiTickets] = useState<Partial<DemoTicketMap>>({});
+  const [aiTraces, setAiTraces] = useState<Partial<Record<DemoCase, RetrievalTrace>>>({});
   const [aiLoading, setAiLoading] = useState(false);
   const [aiError, setAiError] = useState<string | null>(null);
   const requestSequence = useRef(0);
@@ -94,6 +103,7 @@ export function DemoApp({
   };
   const configuredAiMode = aiRuntime.requestedMode === "mock" ? null : aiRuntime.requestedMode;
   const activeTicket = displayMode === "ai" && aiTickets[selectedCase] ? aiTickets[selectedCase] : mockTickets[selectedCase];
+  const activeTrace = displayMode === "ai" && aiTraces[selectedCase] ? aiTraces[selectedCase] : initialRetrievalTraces[selectedCase];
   const activeProviderMode: AiMode = displayMode === "ai" && configuredAiMode ? configuredAiMode : "mock";
 
   const loadAiCase = async (demoCase: DemoCase) => {
@@ -125,8 +135,11 @@ export function DemoApp({
       }
       const candidate = result && typeof result === "object" && "candidate" in result ? result.candidate : null;
       if (!isAiCandidate(candidate)) throw new Error("服务端返回的AI结果不符合工单契约。");
-      const ticket = createDemoTicket(demoCase, candidate);
+      const trace = result && typeof result === "object" && "retrieval_trace" in result ? result.retrieval_trace : null;
+      if (!isRetrievalTrace(trace)) throw new Error("服务端返回的检索轨迹不符合契约。");
+      const ticket = createDemoTicket(demoCase, candidate, trace);
       setAiTickets((current) => ({ ...current, [demoCase]: ticket }));
+      setAiTraces((current) => ({ ...current, [demoCase]: trace }));
     } catch (error) {
       if (requestId === requestSequence.current) {
         setDisplayMode("mock");
@@ -164,14 +177,14 @@ export function DemoApp({
     warning: aiError,
   };
   return (
-    <DemoSessionProvider key={`${selectedCase}-${displayMode}-${aiLoading ? "loading" : "ready"}`} initialTicket={activeTicket} demoCase={selectedCase} aiMode={activeProviderMode} processingDelayMs={processingDelayMs} processingPaused={aiLoading}>
+    <DemoSessionProvider key={`${selectedCase}-${displayMode}-${aiLoading ? "loading" : "ready"}`} initialTicket={activeTicket} initialRetrievalTrace={activeTrace} caseTwoFollowUpCandidate={caseTwoFollowUpCandidate} caseTwoFollowUpTrace={caseTwoFollowUpTrace} demoCase={selectedCase} aiMode={activeProviderMode} processingDelayMs={processingDelayMs} processingPaused={aiLoading}>
       <DemoScreen selectedCase={selectedCase} onSelectCase={selectCase} caseTwoAvailable={Boolean(caseTwoTicket)} caseThreeAvailable={Boolean(caseThreeTicket)} aiRuntime={currentRuntime} displayMode={displayMode} onSelectMode={selectMode} aiLoading={aiLoading} sequenceDelayMs={sequenceDelayMs} />
     </DemoSessionProvider>
   );
 }
 
 function DemoScreen({ selectedCase, onSelectCase, caseTwoAvailable, caseThreeAvailable, aiRuntime, displayMode, onSelectMode, aiLoading, sequenceDelayMs }: { selectedCase: DemoCase; onSelectCase: (value: DemoCase) => void; caseTwoAvailable: boolean; caseThreeAvailable: boolean; aiRuntime: AiRuntimeInfo; displayMode: DisplayMode; onSelectMode: (mode: DisplayMode) => void; aiLoading: boolean; sequenceDelayMs: number }) {
-  const { ticket, initialTicket, demoCase, serviceView, timeline, hasFollowUp, followUpSubmitted, followUpError, followUpNotice, confirmResolved, requestHuman, addCaseTwoRequest, continueFollowUpWithMock, completeReissue, notifyDepartment, closeTier1, completeRefund, registerReport, transferDepartment, closeTier2, openTicket, backToList, reset } = useDemoSession();
+  const { ticket, retrievalTrace, initialTicket, demoCase, serviceView, timeline, hasFollowUp, followUpSubmitted, followUpError, followUpNotice, confirmResolved, requestHuman, addCaseTwoRequest, continueFollowUpWithMock, completeReissue, notifyDepartment, closeTier1, completeRefund, registerReport, transferDepartment, closeTier2, openTicket, backToList, reset } = useDemoSession();
   const [showSources, setShowSources] = useState(false);
   const [sequenceRunId, setSequenceRunId] = useState(0);
   const processing = ticket.workflow.ticket_status === "ai_processing";
@@ -262,7 +275,7 @@ function DemoScreen({ selectedCase, onSelectCase, caseTwoAvailable, caseThreeAva
                   <div className="source-card">
                     <div className="source-card-title">本次回答依据</div>
                     {ticket.ai_processing.knowledge_sources.map((source) => (
-                      <div key={source.document_id}>
+                      <div key={`${source.document_id}-${source.section}`}>
                         <strong>{source.title}</strong>
                         <div className="muted">{source.section} · {source.version}</div>
                         <div className="source-quote">“{source.quote}”</div>
@@ -446,9 +459,28 @@ function DemoScreen({ selectedCase, onSelectCase, caseTwoAvailable, caseThreeAva
                       </div>
                       <div className="record-item ai-reply"><span>AI回复</span><p>{ticket.ai_processing.reply ?? "暂无"}</p></div>
                       <div className="evidence-grid">
-                        <div><span>知识来源</span>{ticket.ai_processing.knowledge_sources.map((source) => <p key={source.document_id}><strong>{source.document_id} · {source.title}</strong><small>“{source.quote ?? "无引用片段"}”</small></p>)}</div>
+                        <div><span>知识来源</span>{ticket.ai_processing.knowledge_sources.map((source) => <p key={`${source.document_id}-${source.section}`}><strong>{source.document_id} · {source.title}</strong><small>“{source.quote ?? "无引用片段"}”</small></p>)}</div>
                         <div><span>用户数据来源</span>{ticket.ai_processing.user_data_sources.map((source) => <p key={`${source.source}-${source.queried_at}`}><strong>{source.source}</strong><small>{source.fields.join("、")}</small></p>)}</div>
                       </div>
+                      <details className="retrieval-trace" aria-label="检索轨迹">
+                        <summary>查看检索轨迹</summary>
+                        <div className="trace-summary-grid">
+                          <div><span>请求／实际模式</span><strong>{retrievalTrace.mode_requested} / {retrievalTrace.mode_used}</strong></div>
+                          <div><span>证据状态</span><strong>{retrievalTrace.retrieval_status}</strong></div>
+                          <div><span>知识库版本</span><strong>{retrievalTrace.knowledge_base_version}</strong></div>
+                          <div><span>Embedding模型</span><strong>{retrievalTrace.embedding_model ?? "未使用"}</strong></div>
+                          <div><span>过滤片段</span><strong>{retrievalTrace.filtered_count}</strong></div>
+                          <div><span>耗时</span><strong>总计 {retrievalTrace.timings_ms.total.toFixed(1)}ms · Embedding {retrievalTrace.timings_ms.embedding?.toFixed(1) ?? "—"}ms</strong></div>
+                        </div>
+                        {retrievalTrace.warning && <p className="trace-warning">{retrievalTrace.warning}</p>}
+                        <ol className="trace-hit-list">
+                          {retrievalTrace.hits.map((hit) => <li key={hit.chunk_id}>
+                            <strong>#{hit.final_rank} {hit.chunk_id}</strong>
+                            <span>{hit.title}</span>
+                            <small>BM25 #{hit.lexical_rank ?? "—"} · Vector #{hit.vector_rank ?? "—"} · RRF {hit.rrf_score?.toFixed(6) ?? "—"}</small>
+                          </li>)}
+                        </ol>
+                      </details>
                     </div>
                     {isCaseThree && <Tier2OperationPanel ticket={ticket} refundDone={refundDone} reportDone={reportDone} departmentProcessing={departmentProcessing} completeRefund={completeRefund} registerReport={registerReport} transferDepartment={transferDepartment} />}
                     {isCaseTwo && hasFollowUp && <Tier1OperationPanel ticket={ticket} reissueDone={reissueDone} departmentDone={departmentDone} completeReissue={completeReissue} notifyDepartment={notifyDepartment} />}

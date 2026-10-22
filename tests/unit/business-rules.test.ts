@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { applyBusinessRules } from "@/domain/classification/apply-business-rules";
-import { mockAiProvider } from "@/ai/mock-ai-provider";
 import { caseOneInput } from "@/data/demos/case-one";
+import { mockCandidateFor } from "../helpers/mock-rag";
 
 describe("AI business rules", () => {
   it("treats an explicit unsubscribe request as low-risk human work", async () => {
-    const base = await mockAiProvider.analyze(caseOneInput);
-    const result = applyBusinessRules(base, { ...caseOneInput, message: "请帮我退订连续包月。" });
+    const prepared = await mockCandidateFor(caseOneInput);
+    const result = applyBusinessRules(prepared.candidate, { ...prepared.input, message: "请帮我退订连续包月。" });
 
     expect(result.handling_category).toBe("low_risk_other");
     expect(result.subtypes).toContain("unsubscribe");
@@ -14,8 +14,8 @@ describe("AI business rules", () => {
   });
 
   it("does not mistake a historical cancellation statement for a new operation request", async () => {
-    const base = await mockAiProvider.analyze(caseOneInput);
-    const result = applyBusinessRules(base, caseOneInput);
+    const prepared = await mockCandidateFor(caseOneInput);
+    const result = applyBusinessRules(prepared.candidate, prepared.input);
 
     expect(result.handling_category).toBe("low_risk_info");
     expect(result.subtypes).not.toContain("unsubscribe");
@@ -23,10 +23,25 @@ describe("AI business rules", () => {
   });
 
   it("blocks direct replies when identity verification is missing", async () => {
-    const base = await mockAiProvider.analyze(caseOneInput);
-    const result = applyBusinessRules(base, { ...caseOneInput, identity_status: "unverified" });
+    const prepared = await mockCandidateFor(caseOneInput);
+    const result = applyBusinessRules(prepared.candidate, { ...prepared.input, identity_status: "unverified" });
 
     expect(result.evidence_status).toBe("insufficient");
+    expect(result.recommended_action).toBe("assign_tier1");
+  });
+
+  it.each([
+    ["conflicting", "conflicting"],
+    ["insufficient", "insufficient"],
+    ["unavailable", "insufficient"],
+  ] as const)("does not upgrade %s retrieval evidence to a direct answer", async (retrievalStatus, expectedEvidenceStatus) => {
+    const prepared = await mockCandidateFor(caseOneInput);
+    const result = applyBusinessRules(
+      { ...prepared.candidate, evidence_status: "sufficient", recommended_action: "reply" },
+      { ...prepared.input, retrieval_status: retrievalStatus },
+    );
+
+    expect(result.evidence_status).toBe(expectedEvidenceStatus);
     expect(result.recommended_action).toBe("assign_tier1");
   });
 
@@ -37,8 +52,8 @@ describe("AI business rules", () => {
     "补发尚未完成，请等待人工审核。",
     "已收到您关于优惠券未到账的反馈，补发诉求已记录。",
   ])("allows a negated or intake status instead of treating it as completed: %s", async (reply) => {
-    const base = await mockAiProvider.analyze(caseOneInput);
-    expect(() => applyBusinessRules({ ...base, reply }, caseOneInput)).not.toThrow();
+    const prepared = await mockCandidateFor(caseOneInput);
+    expect(() => applyBusinessRules({ ...prepared.candidate, reply }, prepared.input)).not.toThrow();
   });
 
   it.each([
@@ -48,7 +63,7 @@ describe("AI business rules", () => {
     "本次退款已到账。",
     "已替您取消自动续订。",
   ])("still rejects an unconfirmed completion claim: %s", async (reply) => {
-    const base = await mockAiProvider.analyze(caseOneInput);
-    expect(() => applyBusinessRules({ ...base, reply }, caseOneInput)).toThrow(/未经人工确认/);
+    const prepared = await mockCandidateFor(caseOneInput);
+    expect(() => applyBusinessRules({ ...prepared.candidate, reply }, prepared.input)).toThrow(/未经人工确认/);
   });
 });
