@@ -37,6 +37,10 @@ button, input { font: inherit; }
 .endpoint-heading { height: 46px; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 12px; color: #195d8f; }
 .endpoint-heading h2 { margin: 0; font-size: 18px; font-weight: 800; line-height: 1.15; }
 .endpoint-heading span { display: block; margin-top: 3px; color: #6f96b2; font-size: 9px; font-weight: 700; }
+.language-note { width: min(100%, 370px); margin: -5px auto 8px; color: #7790a4; font-size: 9px; text-align: right; }
+[data-locale="ja-JP"] { font-family: Arial, "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif; }
+[data-locale="ja-JP"] .endpoint-heading h2,
+[data-locale="ja-JP"] .demo-header h1 { letter-spacing: 0; }
 .voice-transcript-icon { width: 34px; height: 34px; flex: 0 0 auto; color: var(--brand); fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
 .voice-transcript-icon circle { fill: currentColor; stroke: none; }
 .system-icon { width: 32px; height: 32px; display: grid !important; place-items: center; margin: 0 !important; border-radius: 10px; color: white !important; background: var(--brand); font-size: 9px !important; font-weight: 900 !important; }

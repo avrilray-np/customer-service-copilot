@@ -6,19 +6,47 @@ import { DemoApp } from "@/components/demo-app";
 import { createCaseThreeTicket, createCaseTwoWaitingTicket, createWaitingTicket } from "@/domain/ticket/create-ticket";
 import { caseOneInput } from "@/data/demos/case-one";
 import { caseTwoInput } from "@/data/demos/case-two";
+import type { DemoLocale } from "@/localization/demo-copy";
 import { mockCandidateFor, mockDemoData } from "../helpers/mock-rag";
 
-async function renderApp(aiRuntime?: AiRuntimeInfo) {
+async function renderApp(aiRuntime?: AiRuntimeInfo, locale: DemoLocale = "zh-CN") {
   const data = await mockDemoData();
   const ticket = createWaitingTicket(data.caseOne.candidate, { knowledgeBaseVersion: data.caseOne.trace.knowledge_base_version });
   const caseTwoTicket = createCaseTwoWaitingTicket(data.caseTwo.candidate, { knowledgeBaseVersion: data.caseTwo.trace.knowledge_base_version });
   const caseThreeTicket = createCaseThreeTicket(data.caseThree.candidate, { knowledgeBaseVersion: data.caseThree.trace.knowledge_base_version });
-  return render(<DemoApp initialTicket={ticket} caseTwoTicket={caseTwoTicket} caseThreeTicket={caseThreeTicket} initialRetrievalTraces={{ "case-one": data.caseOne.trace, "case-two": data.caseTwo.trace, "case-three": data.caseThree.trace }} caseTwoFollowUpCandidate={data.caseTwoFollowUp.candidate} caseTwoFollowUpTrace={data.caseTwoFollowUp.trace} aiRuntime={aiRuntime} processingDelayMs={20} sequenceDelayMs={40} />);
+  return render(<DemoApp locale={locale} initialTicket={ticket} caseTwoTicket={caseTwoTicket} caseThreeTicket={caseThreeTicket} initialRetrievalTraces={{ "case-one": data.caseOne.trace, "case-two": data.caseTwo.trace, "case-three": data.caseThree.trace }} caseTwoFollowUpCandidate={data.caseTwoFollowUp.candidate} caseTwoFollowUpTrace={data.caseTwoFollowUp.trace} aiRuntime={aiRuntime} processingDelayMs={20} sequenceDelayMs={40} />);
 }
 
 afterEach(() => vi.unstubAllGlobals());
 
 describe("DemoApp", () => {
+  it("renders the Japanese interface without translating English controls or Chinese business content", async () => {
+    const user = userEvent.setup();
+    await renderApp(undefined, "ja-JP");
+
+    expect(screen.getByRole("heading", { name: "AIカスタマーサポートとチケット処理フロー" })).toBeInTheDocument();
+    expect(screen.getByLabelText("ユーザー画面")).toBeInTheDocument();
+    expect(screen.getByLabelText("カスタマーサポート画面")).toBeInTheDocument();
+    expect(screen.getByText("中国語の問い合わせ例")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "AI Only" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Low-Risk AI Assist & Handoff" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "High-Risk AI Fast-Track" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Mock Mode" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "AI Mode" })).toBeInTheDocument();
+    expect(screen.getAllByText("我昨天已经取消连续包月了，为什么今天还是会员？之后还会扣钱吗？").length).toBeGreaterThan(0);
+
+    await user.click(await screen.findByRole("button", { name: "解決済み" }));
+    expect(screen.getByLabelText("チケット一覧画面")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "チケット詳細を表示" }));
+    expect(screen.getByLabelText("チケット詳細画面")).toBeInTheDocument();
+    expect(screen.getByLabelText("AI生成のお問い合わせ要約")).toHaveTextContent("用户已取消自动续订");
+    expect(screen.getByLabelText("元音声・文字起こし")).toHaveTextContent("我昨天已经取消连续包月了");
+    const retrievalTrace = screen.getByLabelText("検索トレース");
+    await user.click(screen.getByText("検索トレースを表示"));
+    expect(retrievalTrace).toHaveTextContent("要求／実行モード");
+    expect(retrievalTrace).toHaveTextContent("BM25");
+  });
+
   it("shows evidence and closes after explicit confirmation", async () => {
     const user = userEvent.setup();
     await renderApp();
